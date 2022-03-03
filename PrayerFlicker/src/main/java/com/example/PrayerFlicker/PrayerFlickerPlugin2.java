@@ -102,8 +102,8 @@ public class PrayerFlickerPlugin2 extends Plugin
 		Object packetBufferNode = getPacketBufferNode.invoke(null, Widget1Packet.get(ClientPacket),isaac, (byte) -119);
 		Buffer buffer = (net.runelite.api.Buffer) packetBufferNode.getClass().getDeclaredField("s").get(packetBufferNode);
 		buffer.writeInt(one);
-		buffer.writeShort(two);
 		buffer.writeShort(three);
+		buffer.writeShort(two);
 		Method addNode = packetWriter.get(null).getClass().getMethod("s",PacketBufferNode,int.class);
 		addNode.setAccessible(true);
 		addNode.invoke(packetWriter.get(null),packetBufferNode,1102926475);
