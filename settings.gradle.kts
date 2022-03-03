@@ -24,8 +24,6 @@
  */
 
 rootProject.name = "external plugins example"
-
-include(":oneclicklavas")
 include(":PrayerFlicker")
 for (project in rootProject.children) {
     project.apply {
