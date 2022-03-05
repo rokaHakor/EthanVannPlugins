@@ -1,5 +1,5 @@
 # Ethan Vann Plugins
-###repo info
+### repo info
 - Github Repository owner: Ethan-Vann
 - Github Repository name: EthanVannPlugins
 
