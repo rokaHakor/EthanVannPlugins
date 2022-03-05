@@ -25,10 +25,10 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.2"
+version = "0.0.3"
 
 project.extra["PluginName"] = "PrayerFlickerPlugin" // This is the name that is used in the external plugin manager panel
-project.extra["PluginDescription"] = "Java example plugin" // This is the description that is used in the external plugin manager panel
+project.extra["PluginDescription"] = "1 tick flicks quick prayers on a toggle" // This is the description that is used in the external plugin manager panel
 
 dependencies {
     annotationProcessor(Libraries.lombok)

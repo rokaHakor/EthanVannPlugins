@@ -3,6 +3,7 @@ package com.example.PrayerFlicker;
 import com.google.inject.Provides;
 import lombok.SneakyThrows;
 import net.runelite.api.*;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -36,10 +37,10 @@ public class PrayerFlickerPlugin2 extends Plugin
 	public int timeout = 0;
 	@Inject
 	Client client;
-	boolean once = true;
 	@Inject
 	private ClientThread clientThread;
 	private int rev = 203;
+	private boolean loaded = false;
 	@Inject
 	private KeyManager keyManager;
 	@Inject
@@ -56,22 +57,29 @@ public class PrayerFlickerPlugin2 extends Plugin
 	private int quickPrayerWidgetID = WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId();
 
 	@SneakyThrows
-	private void loadShit(){
-		class135 = client.getClass().getClassLoader().loadClass("ev");
-		ClientPacket = client.getClass().getClassLoader().loadClass("ie");
-		ClickPacket = ClientPacket.getDeclaredField("ab");
-		ClickPacket.setAccessible(true);
-		Widget1Packet = ClientPacket.getDeclaredField("b");
-		Widget1Packet.setAccessible(true);
-		packetWriter = client.getClass().getDeclaredField("ga");
-		PacketBufferNode = client.getClass().getClassLoader().loadClass("ii");
-		packetWriter.setAccessible(true);
-		Field isaac2 = packetWriter.get(null).getClass().getDeclaredField("r");
-		isaac2.setAccessible(true);
-		isaac = isaac2.get(packetWriter.get(null));
-		isaacClass = client.getClass().getClassLoader().loadClass("pv");
-		getPacketBufferNode = Arrays.stream(class135.getDeclaredMethods()).filter(x->x.getParameterCount()==3).findFirst().orElse(null);
-		getPacketBufferNode.setAccessible(true);
+	private boolean loadShit(){
+		try {
+			class135 = client.getClass().getClassLoader().loadClass("ev");
+			ClientPacket = client.getClass().getClassLoader().loadClass("ie");
+			ClickPacket = ClientPacket.getDeclaredField("ab");
+			ClickPacket.setAccessible(true);
+			Widget1Packet = ClientPacket.getDeclaredField("b");
+			Widget1Packet.setAccessible(true);
+			packetWriter = client.getClass().getDeclaredField("ga");
+			PacketBufferNode = client.getClass().getClassLoader().loadClass("ii");
+			packetWriter.setAccessible(true);
+			Field isaac2 = packetWriter.get(null).getClass().getDeclaredField("r");
+			isaac2.setAccessible(true);
+			isaac = isaac2.get(packetWriter.get(null));
+			isaacClass = client.getClass().getClassLoader().loadClass("pv");
+			getPacketBufferNode = Arrays.stream(class135.getDeclaredMethods()).filter(x -> x.getParameterCount() == 3).findFirst().orElse(null);
+			getPacketBufferNode.setAccessible(true);
+		}catch(Exception e){
+			client.getLogger().warn("Failed to load prayer flicker plugin");
+			return false;
+		}
+		client.getLogger().warn("prayer flicker plugin loaded");
+		return true;
 	}
 	@SneakyThrows
 	private void queueClickPacket(){
@@ -97,6 +105,15 @@ public class PrayerFlickerPlugin2 extends Plugin
 		addNode.setAccessible(true);
 		addNode.invoke(packetWriter.get(null),packetBufferNode,1102926475);
 	}
+	@Subscribe
+	public void onGameStateChanged(GameStateChanged event){
+		if(event.getGameState()==GameState.LOGGED_IN&&!loaded){
+			loaded = loadShit();
+		}
+		if(event.getGameState()==GameState.LOGIN_SCREEN){
+			loaded = false;
+		}
+	}
 	@SneakyThrows
 	private void queueWidgetPacket(int one,int two,int three){
 		Object packetBufferNode = getPacketBufferNode.invoke(null, Widget1Packet.get(ClientPacket),isaac, (byte) -119);
@@ -116,6 +133,9 @@ public class PrayerFlickerPlugin2 extends Plugin
 
 	private void togglePrayer()
 	{
+		if(!loaded){
+			loaded = loadShit();
+		}
 		queueClickPacket();
 		queueWidgetPacket(quickPrayerWidgetID,-1,-1);
 	}
@@ -135,13 +155,13 @@ public class PrayerFlickerPlugin2 extends Plugin
 			});
 			return;
 		}
-		loadShit();
 		keyManager.registerKeyListener(prayerToggle);
 	}
 
 	@Override
 	public void shutDown()
 	{
+		loaded = false;
 		keyManager.unregisterKeyListener(prayerToggle);
 		toggle = false;
 		if (client.getGameState() != GameState.LOGGED_IN)
@@ -176,10 +196,6 @@ public class PrayerFlickerPlugin2 extends Plugin
 	}
 	@Subscribe
 	public void onGameTick(GameTick event) throws NoSuchFieldException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-		if(once){
-			once = false;
-			queueClickPacket();
-		}
 		if (client.getGameState() != GameState.LOGGED_IN)
 		{
 			return;
