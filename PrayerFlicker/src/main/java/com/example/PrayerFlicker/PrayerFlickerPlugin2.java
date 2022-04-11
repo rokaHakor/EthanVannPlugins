@@ -113,6 +113,9 @@ public class PrayerFlickerPlugin2 extends Plugin
 		if(event.getGameState()==GameState.LOGIN_SCREEN){
 			loaded = false;
 		}
+		if(event.getGameState()==GameState.HOPPING){
+			loaded = false;
+		}
 	}
 	@SneakyThrows
 	private void queueWidgetPacket(int one,int two,int three){
