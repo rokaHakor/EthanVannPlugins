@@ -173,7 +173,7 @@ public class PrayerFlickerPlugin2 extends Plugin
 		}
 		clientThread.invoke(() ->
 		{
-			if (client.getVar(Varbits.QUICK_PRAYER)==1)
+			if (client.getVarbitValue(4103) == 1)
 			{
 				togglePrayer();
 			}
@@ -206,7 +206,7 @@ public class PrayerFlickerPlugin2 extends Plugin
 
 		if (toggle)
 		{
-			if (client.getVar(Varbits.QUICK_PRAYER) == 1)
+			if (client.getVarbitValue(4103) == 1)
 			{
 				togglePrayer();
 			}
@@ -234,7 +234,7 @@ public class PrayerFlickerPlugin2 extends Plugin
 		{
 			clientThread.invoke(() ->
 			{
-				if (client.getVar(Varbits.QUICK_PRAYER)==1)
+				if (client.getVarbitValue(4103) == 1)
 				{
 					togglePrayer();
 				}
@@ -253,7 +253,7 @@ public class PrayerFlickerPlugin2 extends Plugin
 		{
 			clientThread.invoke(() ->
 			{
-				if (client.getVar(Varbits.QUICK_PRAYER)==1)
+				if (client.getVarbitValue(4103) == 1)
 				{
 					togglePrayer();
 				}
