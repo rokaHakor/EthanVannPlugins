@@ -1,5 +1,6 @@
 package com.example.PrayerFlicker;
 
+import com.google.inject.Inject;
 import com.google.inject.Provides;
 import lombok.SneakyThrows;
 import net.runelite.api.*;
@@ -16,8 +17,6 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.WidgetInfo;
 import org.pf4j.Extension;
-
-import javax.inject.Inject;
 import java.awt.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -40,7 +39,7 @@ public class PrayerFlickerPlugin2 extends Plugin
 	Client client;
 	@Inject
 	private ClientThread clientThread;
-	private int rev = 204;
+	private int rev = 205;
 	private boolean loaded = false;
 	@Inject
 	private KeyManager keyManager;
@@ -60,19 +59,19 @@ public class PrayerFlickerPlugin2 extends Plugin
 	@SneakyThrows
 	private boolean loadShit(){
 		try {
-			classWithgetPacketBufferNode = client.getClass().getClassLoader().loadClass("hn");
-			ClientPacket = client.getClass().getClassLoader().loadClass("jl");
-			ClickPacket = ClientPacket.getDeclaredField("bx");
+			classWithgetPacketBufferNode = client.getClass().getClassLoader().loadClass("hf");
+			ClientPacket = client.getClass().getClassLoader().loadClass("jj");
+			ClickPacket = ClientPacket.getDeclaredField("cp");
 			ClickPacket.setAccessible(true);
-			Widget1Packet = ClientPacket.getDeclaredField("m");
+			Widget1Packet = ClientPacket.getDeclaredField("bl");
 			Widget1Packet.setAccessible(true);
-			packetWriter = client.getClass().getDeclaredField("gp");
-			PacketBufferNode = client.getClass().getClassLoader().loadClass("jd");
+			packetWriter = client.getClass().getDeclaredField("gm");
+			PacketBufferNode = client.getClass().getClassLoader().loadClass("jm");
 			packetWriter.setAccessible(true);
-			Field isaac2 = packetWriter.get(null).getClass().getDeclaredField("b");
+			Field isaac2 = packetWriter.get(null).getClass().getDeclaredField("a");
 			isaac2.setAccessible(true);
 			isaac = isaac2.get(packetWriter.get(null));
-			isaacClass = client.getClass().getClassLoader().loadClass("qv");
+			isaacClass = client.getClass().getClassLoader().loadClass("qh");
 			getPacketBufferNode =Arrays.stream(classWithgetPacketBufferNode.getDeclaredMethods()).filter(m->m.getReturnType().equals(PacketBufferNode)).collect(Collectors.toList()).get(0);
 			getPacketBufferNode.setAccessible(true);
 		}catch(Exception e){
@@ -84,8 +83,8 @@ public class PrayerFlickerPlugin2 extends Plugin
 	}
 	@SneakyThrows
 	private void queueClickPacket(){
-		Object packetBufferNode = getPacketBufferNode.invoke(null, ClickPacket.get(ClientPacket),isaac, -2117269105);
-		Buffer buffer = (net.runelite.api.Buffer) packetBufferNode.getClass().getDeclaredField("i").get(packetBufferNode);
+		Object packetBufferNode = getPacketBufferNode.invoke(null, ClickPacket.get(ClientPacket),isaac, (byte)-72);
+		Buffer buffer = (net.runelite.api.Buffer) packetBufferNode.getClass().getDeclaredField("l").get(packetBufferNode);
 		client.setMouseLastPressedMillis(System.currentTimeMillis());
 		int mousePressedTime = ((int) (client.getMouseLastPressedMillis() - client.getClientMouseLastPressedMillis()));
 		if (mousePressedTime < 0)
@@ -102,9 +101,9 @@ public class PrayerFlickerPlugin2 extends Plugin
 		buffer.writeShort(mouseInfo);
 		buffer.writeShort(0);
 		buffer.writeShort(0);
-		Method addNode = packetWriter.get(null).getClass().getMethod("i",PacketBufferNode,int.class);
+		Method addNode = packetWriter.get(null).getClass().getMethod("l",PacketBufferNode,byte.class);
 		addNode.setAccessible(true);
-		addNode.invoke(packetWriter.get(null),packetBufferNode,-1704102815);
+		addNode.invoke(packetWriter.get(null),packetBufferNode,(byte)0);
 	}
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged event){
@@ -120,14 +119,14 @@ public class PrayerFlickerPlugin2 extends Plugin
 	}
 	@SneakyThrows
 	private void queueWidgetPacket(int one,int two,int three){
-		Object packetBufferNode = getPacketBufferNode.invoke(null, Widget1Packet.get(ClientPacket),isaac, -2117269105);
-		Buffer buffer = (net.runelite.api.Buffer) packetBufferNode.getClass().getDeclaredField("i").get(packetBufferNode);
+		Object packetBufferNode = getPacketBufferNode.invoke(null, Widget1Packet.get(ClientPacket),isaac, (byte)-72);
+		Buffer buffer = (net.runelite.api.Buffer) packetBufferNode.getClass().getDeclaredField("l").get(packetBufferNode);
 		buffer.writeInt(one);
 		buffer.writeShort(three);
 		buffer.writeShort(two);
-		Method addNode = packetWriter.get(null).getClass().getMethod("i",PacketBufferNode,int.class);
+		Method addNode = packetWriter.get(null).getClass().getMethod("l",PacketBufferNode,byte.class);
 		addNode.setAccessible(true);
-		addNode.invoke(packetWriter.get(null),packetBufferNode,-1704102815);
+		addNode.invoke(packetWriter.get(null),packetBufferNode,(byte)0);
 	}
 	@Provides
 	public PrayerFlickerConfig getConfig(ConfigManager configManager)

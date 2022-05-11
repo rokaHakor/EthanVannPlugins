@@ -25,7 +25,7 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.7"
+version = "0.0.8"
 
 project.extra["PluginName"] = "PrayerFlickerPlugin" // This is the name that is used in the external plugin manager panel
 project.extra["PluginDescription"] = "1 tick flicks quick prayers on a toggle" // This is the description that is used in the external plugin manager panel

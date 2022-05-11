@@ -25,6 +25,8 @@
 
 rootProject.name = "external plugins example"
 include(":PrayerFlicker")
+//include("pvpkeys")
+//include("oneClickLavas")
 for (project in rootProject.children) {
     project.apply {
         projectDir = file(name)
