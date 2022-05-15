@@ -11,6 +11,3 @@
 <br>&emsp;&emsp;One tick flicks prayers with a toggle on keybind
 
 ***
-
-- [OneClickLavas:](https://github.com/Ethan-Vann/EthanVannPlugins/blob/master/oneclicklavas/src/main/java/com/example/oneclicklavas/OneClickLavasPlugin.java "Source")
-<br>&emsp;&emsp;Allows crafting lavas by left clicking anywhere in the client window. (Not released InDev.)
