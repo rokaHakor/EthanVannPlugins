@@ -25,6 +25,7 @@
 
 rootProject.name = "external plugins example"
 include(":PrayerFlicker")
+include(":GlocRCHelper")
 //include("pvpkeys")
 for (project in rootProject.children) {
     project.apply {

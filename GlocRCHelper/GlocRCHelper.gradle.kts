@@ -27,7 +27,7 @@ import ProjectVersions.openosrsVersion
 version = "0.0.1"
 
 project.extra["PluginName"] = "gloc rc helper" // This is the name that is used in the external plugin manager panel
-project.extra["PluginDescription"] = "" // This is the description that is used in the external plugin manager panel
+project.extra["PluginDescription"] = "Makes ring of the elements use equipped dueling ring tele to cwars if you're at an altar" // This is the description that is used in the external plugin manager panel
 
 dependencies {
     annotationProcessor(Libraries.lombok)

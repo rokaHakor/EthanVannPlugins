@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @PluginDescriptor(
         name = "Gloc RC Helper",
-        description = ""
+        description = "Makes ring of the elements use equipped dueling ring tele to cwars if you're at an altar"
 )
 @Slf4j
 @Extension
@@ -29,17 +29,14 @@ public class GlocRCHelper extends Plugin {
     private Client client;
     @Subscribe
     public void onMenuOptionClicked(MenuOptionClicked menuOptionClicked) {
-        if(menuOptionClicked.getMenuAction().getId()>32&& menuOptionClicked.getMenuAction().getId()<38) {
-            if (menuOptionClicked.getId() == 26818) {
+            if (menuOptionClicked.getItemId() == 26818) {
                 GameObjectQuery x = new GameObjectQuery();
                 LocatableQueryResults results = x.nameEquals("Altar").result(client);
                 if (results.size() > 0) {
                     Widget widget = client.getWidget(WidgetInfo.EQUIPMENT_RING);
-                   // menuOptionClicked.setMenuEntry(createMenuEntry(Arrays.stream(widget.getActions()).collect
-                    // (Collectors.toList()).indexOf("Castle Wars") + 1, MenuAction.CC_OP, widget.getIndex(), widget.getId(), true));
+                    menuOptionClicked.setMenuEntry(createMenuEntry(Arrays.stream(widget.getActions()).collect(Collectors.toList()).indexOf("Castle Wars") + 1, MenuAction.CC_OP, widget.getIndex(), widget.getId(), true));
                 }
             }
-        }
     }
 
     public MenuEntry createMenuEntry(int identifier, MenuAction type, int param0, int param1, boolean forceLeftClick) {
