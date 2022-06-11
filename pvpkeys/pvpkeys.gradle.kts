@@ -25,10 +25,10 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.9"
+version = "0.0.1"
 
-project.extra["PluginName"] = "PrayerFlickerPlugin" // This is the name that is used in the external plugin manager panel
-project.extra["PluginDescription"] = "1 tick flicks quick prayers on a toggle" // This is the description that is used in the external plugin manager panel
+project.extra["PluginName"] = "PvP Keys" // This is the name that is used in the external plugin manager panel
+project.extra["PluginDescription"] = "Helpful Keys for PvP" // This is the description that is used in the external plugin manager panel
 
 dependencies {
     annotationProcessor(Libraries.lombok)
@@ -36,7 +36,8 @@ dependencies {
 
     compileOnly("com.openosrs:runelite-api:$openosrsVersion+")
     compileOnly("com.openosrs:runelite-client:$openosrsVersion+")
-
+//    compileOnly(group = "com.openosrs.externals", name = "PacketUtils", version = "+")
+    compileOnly(project(":PacketUtils"))
     compileOnly(Libraries.guice)
     compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
@@ -47,11 +48,13 @@ tasks {
     jar {
         manifest {
             attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
+                "Plugin-Version" to project.version,
+                "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
+                "Plugin-Provider" to project.extra["PluginProvider"],
+                "Plugin-Dependencies" to
+                        arrayOf(nameToId("PacketUtils")).joinToString(),
+                "Plugin-Description" to project.extra["PluginDescription"],
+                "Plugin-License" to project.extra["PluginLicense"]
             ))
         }
     }
