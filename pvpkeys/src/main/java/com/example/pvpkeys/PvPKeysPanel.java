@@ -96,11 +96,18 @@ public class PvPKeysPanel extends PluginPanel
 		comboBox.setBackground(Color.darkGray);
 		cross = ImageIO.read(plugin.getFileFromResourceAsStream("cross.png"));
 		check = ImageIO.read(plugin.getFileFromResourceAsStream("check.png"));
-		crossImg = new ImageIcon(cross.getScaledInstance(comboBox.getPreferredSize().height,
-				comboBox.getPreferredSize().height,
+		crossImg = new ImageIcon(cross.getScaledInstance(20,
+				20,
 				Image.SCALE_SMOOTH));
-		checkImg = new ImageIcon(check.getScaledInstance(comboBox.getPreferredSize().height, comboBox.getPreferredSize().height,
+		checkImg = new ImageIcon(check.getScaledInstance(20, 20,
 				Image.SCALE_SMOOTH));
+		if(comboBox.getPreferredSize()!=null){
+			crossImg = new ImageIcon(cross.getScaledInstance(comboBox.getPreferredSize().height,
+					comboBox.getPreferredSize().height,
+					Image.SCALE_SMOOTH));
+			checkImg = new ImageIcon(check.getScaledInstance(comboBox.getPreferredSize().height, comboBox.getPreferredSize().height,
+					Image.SCALE_SMOOTH));
+		}
 		this.plugin = plugin;
 		this.client = client;
 		JButton enable = new JButton("Enable");
