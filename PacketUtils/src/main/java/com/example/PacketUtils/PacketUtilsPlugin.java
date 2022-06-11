@@ -28,7 +28,7 @@ import static net.runelite.client.externalplugins.ExternalPluginManager.pluginMa
 @PluginDescriptor(
 		name = "Packet Utils",
 		description = "Packet Utils for Plugins",
-		enabledByDefault = false
+		enabledByDefault = true
 )
 public class PacketUtilsPlugin extends Plugin
 {
