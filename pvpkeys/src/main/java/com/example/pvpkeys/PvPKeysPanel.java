@@ -101,7 +101,7 @@ public class PvPKeysPanel extends PluginPanel
 				Image.SCALE_SMOOTH));
 		checkImg = new ImageIcon(check.getScaledInstance(20, 20,
 				Image.SCALE_SMOOTH));
-		if(comboBox.getPreferredSize()!=null){
+		if(comboBox.getPreferredSize()!=null&&comboBox.getPreferredSize().height!=0){
 			crossImg = new ImageIcon(cross.getScaledInstance(comboBox.getPreferredSize().height,
 					comboBox.getPreferredSize().height,
 					Image.SCALE_SMOOTH));
