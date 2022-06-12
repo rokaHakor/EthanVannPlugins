@@ -88,7 +88,6 @@ public class pvpkeys extends Plugin
 	int xp = -1;
 	ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 	Actor target = null;
-	@Inject
 	private PvPKeysPanel panel;
 	Path path = Files.createDirectories(Paths.get(RUNELITE_DIR + "/PvPKeys/"));
 	private NavigationButton navButton;
@@ -109,6 +108,7 @@ public class pvpkeys extends Plugin
 	protected void startUp() throws Exception
 	{
 		final BufferedImage icon = ImageIO.read(getFileFromResourceAsStream("73.png"));
+		panel = new PvPKeysPanel(client,this);
 		navButton = NavigationButton.builder()
 				.tooltip("Pvp Keys")
 				.icon(icon)
