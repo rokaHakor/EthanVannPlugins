@@ -356,13 +356,23 @@ public class pvpkeys extends Plugin
 						}
 						if (target instanceof NPC)
 						{
-							mousePackets.queueClickPacket();
-							npcPackets.queueNPCAction((NPC) target, "Attack");
+							if(Arrays.asList(((NPC) target).getComposition().getActions()).contains("Attack")){
+								mousePackets.queueClickPacket();
+								npcPackets.queueNPCAction((NPC) target, "Attack");
+							}else{
+								mousePackets.queueClickPacket();
+								npcPackets.queueNPCAction(2,((NPC) target).getIndex(),false);
+							}
 						}
 						else if (target instanceof Player)
 						{
-							mousePackets.queueClickPacket();
-							playerPackets.queuePlayerAction((Player) target, "Attack");
+							if(Arrays.asList(((Player) target).getActions()).contains("Attack")){
+								mousePackets.queueClickPacket();
+								playerPackets.queuePlayerAction((Player) target, "Attack");
+							}else{
+								mousePackets.queueClickPacket();
+								playerPackets.queuePlayerAction(2,((Player) target).getId(),false);
+							}
 						}
 						break;
 					case "equip":

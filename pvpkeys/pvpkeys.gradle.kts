@@ -25,7 +25,7 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.10"
+version = "0.0.11"
 
 project.extra["PluginName"] = "PvP Keys" // This is the name that is used in the external plugin manager panel
 project.extra["PluginDescription"] = "Helpful Keys for PvP" // This is the description that is used in the external plugin manager panel
