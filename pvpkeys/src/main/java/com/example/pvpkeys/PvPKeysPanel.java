@@ -297,36 +297,41 @@ public class PvPKeysPanel extends PluginPanel
 		panel.setLayout(new BorderLayout());
 		enable.addActionListener(e ->
 		{
-			if (enable.getText().equals("Enable"))
+			if(plugin.setupList!=null&&plugin.setupList.size()>=1)
 			{
-				Setup setup =
-						plugin.setupList.stream().filter(x -> x.name.equals(comboBox.getSelectedItem().toString())).findFirst().orElse(null);
-				setup.enabled = true;
-				try
+				if (enable.getText().equals("Enable"))
 				{
-					plugin.writeSetupToFile(setup);
+					Setup setup =
+							plugin.setupList.stream().filter(x -> x.name.equals(comboBox.getSelectedItem().toString())).findFirst().orElse(null);
+					setup.enabled = true;
+					try
+					{
+						plugin.writeSetupToFile(setup);
+					}
+					catch (IOException ex)
+					{
+						ex.printStackTrace();
+					}
+					enable.setText("Disable");
 				}
-				catch (IOException ex)
+				else
 				{
-					ex.printStackTrace();
+					Setup setup =
+							plugin.setupList.stream().filter(x -> x.name.equals(comboBox.getSelectedItem().toString())).findFirst().orElse(null);
+					setup.enabled = false;
+					try
+					{
+						plugin.writeSetupToFile(setup);
+					}
+					catch (IOException ex)
+					{
+						ex.printStackTrace();
+					}
+					enable.setText("Enable");
 				}
-				enable.setText("Disable");
-			}else{
-				Setup setup =
-						plugin.setupList.stream().filter(x -> x.name.equals(comboBox.getSelectedItem().toString())).findFirst().orElse(null);
-				setup.enabled = false;
-				try
-				{
-					plugin.writeSetupToFile(setup);
-				}
-				catch (IOException ex)
-				{
-					ex.printStackTrace();
-				}
-				enable.setText("Enable");
+				plugin.updateHotkeys();
+				update(getGraphics());
 			}
-			plugin.updateHotkeys();
-			update(getGraphics());
 		});
 		panel.add(enable, BorderLayout.EAST);
 		panel.add(button, BorderLayout.WEST);

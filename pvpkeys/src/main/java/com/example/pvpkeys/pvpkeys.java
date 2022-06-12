@@ -49,8 +49,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -70,7 +72,7 @@ public class pvpkeys extends Plugin
 	private ClientToolbar clientToolbar;
 	@Inject
 	private ClientThread clientThread;
-	private HashMap<Integer, String[]> queuedCommands = new HashMap<>();
+	private ConcurrentHashMap<Integer, String[]> queuedCommands = new ConcurrentHashMap<>();
 	@Inject
 	WidgetPackets widgetPackets;
 	@Inject
@@ -94,7 +96,7 @@ public class pvpkeys extends Plugin
 	@Inject
 	private KeyManager keyManager;
 	ArrayList<Setup> setupList = new ArrayList<Setup>();
-	HashMap<String, ListenerKeyPair> hotkeyListenerList = new HashMap<String, ListenerKeyPair>();
+	ConcurrentHashMap<String, ListenerKeyPair> hotkeyListenerList = new ConcurrentHashMap<>();
 	@Inject
 	Client client;
 	int rev = 205;
@@ -222,19 +224,24 @@ public class pvpkeys extends Plugin
 				}
 			}
 		}
-		hotkeyListenerList.forEach((k, v) ->
-		{
-			if (setupList.stream().noneMatch(s -> s.name.equals(k)))
+		for (Iterator<String> keys = hotkeyListenerList.keySet().iterator(); keys.hasNext();) {
+			String key = keys.next();
+			ListenerKeyPair val = hotkeyListenerList.get(key);
+			if(!setupList.stream().anyMatch(x -> x.name.equals(key)))
 			{
-				//				client.getLogger().warn("removing hotkey listener for " + k);
-				keyManager.unregisterKeyListener(v.getListener());
-				hotkeyListenerList.remove(k);
+				keyManager.unregisterKeyListener(val.getListener());
+				hotkeyListenerList.remove(key);
 			}
-		});
-		hotkeyListenerList.forEach((k, v) ->
-		{
-			//			client.getLogger().warn("hotkey listener for " + k + " " + v.getKey());
-		});
+		}
+//		hotkeyListenerList.forEach((k, v) ->
+//		{
+//			if (setupList.stream().noneMatch(s -> s.name.equals(k)))
+//			{
+//				//				client.getLogger().warn("removing hotkey listener for " + k);
+//				keyManager.unregisterKeyListener(v.getListener());
+//				hotkeyListenerList.remove(k);
+//			}
+//		});
 	}
 
 	void translateNameToCommands(String name)
