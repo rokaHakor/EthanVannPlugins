@@ -39,4 +39,7 @@ public enum QuickPrayer
 		this.varbit = varbit;
 		this.index = index;
 	}
+	public int getIndex() {
+		return index;
+	}
 }

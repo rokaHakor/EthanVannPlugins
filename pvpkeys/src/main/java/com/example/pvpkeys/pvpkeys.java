@@ -20,10 +20,12 @@ import net.runelite.api.SpriteID;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuEntryAdded;
+import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
@@ -76,6 +78,8 @@ public class pvpkeys extends Plugin
 	@Inject
 	WidgetPackets widgetPackets;
 	@Inject
+	EventBus eventBus;
+	@Inject
 	NPCPackets npcPackets;
 	@Inject
 	PlayerPackets playerPackets;
@@ -115,7 +119,6 @@ public class pvpkeys extends Plugin
 				.panel(panel)
 				.priority(4)
 				.build();
-
 		clientToolbar.addNavigation(navButton);
 		if (client.getRevision() != rev)
 		{
@@ -310,6 +313,42 @@ public class pvpkeys extends Plugin
 
 						}
 						break;
+					case "quickprayer":
+						if(client.getWidget(WidgetInfo.QUICK_PRAYER_PRAYERS)==null){
+							mousePackets.queueClickPacket();
+							widgetPackets.queueWidgetActionPacket(2,10485775,-1,-1);
+						}
+						if (args[0].equals("on"))
+						{
+							args[1] = args[1].replaceAll("\\s", "_").toUpperCase();
+							QuickPrayer prayer = QuickPrayer.valueOf(args[1]);
+							if (!isQuickPrayerActive(prayer))
+							{
+								mousePackets.queueClickPacket();
+								widgetPackets.queueWidgetActionPacket(1,5046276,-1,prayer.getIndex());
+							}
+						}
+						else if (args[0].equals("off"))
+						{
+							args[1] = args[1].replaceAll(" ", "_").toUpperCase();
+							QuickPrayer prayer = QuickPrayer.valueOf(args[1]);
+							if (isQuickPrayerActive(prayer))
+							{
+								mousePackets.queueClickPacket();
+								widgetPackets.queueWidgetActionPacket(1,5046276,-1,prayer.getIndex());
+							}
+						}
+						else if (args[0].equals("toggle"))
+						{
+							args[1] = args[1].replaceAll(" ", "_").toUpperCase();
+							QuickPrayer prayer = QuickPrayer.valueOf(args[1]);
+							mousePackets.queueClickPacket();
+							widgetPackets.queueWidgetActionPacket(1,5046276,-1,prayer.getIndex());
+						}
+						if(client.getWidget(WidgetInfo.QUICK_PRAYER_PRAYERS)==null){
+							mousePackets.queueClickPacket();
+							widgetPackets.queueWidgetActionPacket(1,5046277,-1,-1);
+						}
 					case "attack":
 						if (target == null)
 						{
@@ -599,6 +638,12 @@ public class pvpkeys extends Plugin
 		}
 	}
 
+	public boolean isQuickPrayerActive(QuickPrayer prayer){
+		if((client.getVarbitValue(4102) & (int)Math.pow(2,prayer.getIndex())) == Math.pow(2,prayer.getIndex())){
+			return true;
+		}
+		return false;
+	}
 	public void writeSetupToFile(Setup setup) throws IOException
 	{
 		String output = "";
