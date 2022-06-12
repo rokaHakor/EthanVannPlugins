@@ -41,7 +41,7 @@ public class PvPKeysPanel extends PluginPanel
 	private final MaterialTabGroup tabGroup = new MaterialTabGroup(display);
 	Path path = Files.createDirectories(Paths.get(RUNELITE_DIR + "/PvPKeys/"));
 	Client client;
-	JComboBox<String> comboBox = new JComboBox<>();
+	JComboBox<String> comboBox;
 	JButton button = new JButton("Remove Set");
 	JTextArea textArea = new JTextArea();
 	pvpkeys plugin;
@@ -55,6 +55,7 @@ public class PvPKeysPanel extends PluginPanel
 	@Inject
 	PvPKeysPanel(Client client, pvpkeys plugin) throws IOException
 	{
+		comboBox = new JComboBox<>();
 		comboBox.setRenderer(new DefaultListCellRenderer()
 		{
 			@Override
@@ -216,90 +217,6 @@ public class PvPKeysPanel extends PluginPanel
 		});
 		hkbutton2 = createKeybind();
 		button.setVisible(true);
-		ItemListener itemListener = new ItemListener()
-		{
-			@Override
-			public void itemStateChanged(ItemEvent e)
-			{
-				if (comboBox != null&&enable!=null&&hkbutton2!=null)
-				{
-					if (e.getStateChange() == ItemEvent.SELECTED)
-					{
-						comboBox.setForeground(Color.white);
-						comboBox.setBackground(Color.darkGray);
-						if (e.getItem().equals("new set"))
-						{
-							String x = JOptionPane.showInputDialog(null, "enter set name");
-							if (x == null)
-							{
-								x = "default set";
-							}
-							if (x == "new set")
-							{
-								x = "default set";
-							}
-							for (int i = 0; i < comboBox.getItemCount() - 1; i++)
-							{
-								if (comboBox.getItemAt(i).equals(x))
-								{
-									JOptionPane.showMessageDialog(null, "Set already exists");
-									return;
-								}
-							}
-							try
-							{
-								Files.createFile(Paths.get(path + "/" + x + ".txt"));
-							}
-							catch (IOException ex)
-							{
-								ex.printStackTrace();
-							}
-							Setup setup = new Setup(x);
-							plugin.setupList.add(setup);
-							try
-							{
-								plugin.writeSetupToFile(setup);
-							}
-							catch (IOException ex)
-							{
-								ex.printStackTrace();
-							}
-							comboBox.insertItemAt(x, Math.max(0, comboBox.getSelectedIndex()));
-							comboBox.setSelectedIndex(comboBox.getItemCount() - 2);
-						}
-						else
-						{
-							Setup setup =
-									plugin.setupList.stream().filter(x -> x.name.equals(e.getItem().toString())).findFirst().orElse(null);
-							if (setup != null)
-							{
-								//							client.getLogger().warn("found setup with name: " + setup.name + " loading");
-								String commands = "";
-								for (String command : setup.commands)
-								{
-									commands += command + "\n";
-								}
-								commands = commands.isBlank() ? "" : commands.trim();
-								//							client.getLogger().warn("loading commands: " + commands);
-								textArea.setText(commands);
-								//							client.getLogger().warn("loading hotkey: " + setup.keybind.toString());
-
-								hkbutton2.setValue(setup.keybind);
-								if (setup.enabled)
-								{
-									enable.setText("Disable");
-								}
-								else
-								{
-									enable.setText("Enable");
-								}
-							}
-						}
-						update(getGraphics());
-					}
-				}
-			}
-		};
 		panel.setLayout(new BorderLayout());
 		enable.addActionListener(e ->
 		{
@@ -407,7 +324,90 @@ public class PvPKeysPanel extends PluginPanel
 
 			}
 		});
-		comboBox.addItemListener(itemListener);
+		comboBox.addItemListener(new ItemListener()
+		{
+			@Override
+			public void itemStateChanged(ItemEvent e)
+			{
+				if (comboBox != null&&enable!=null&&hkbutton2!=null)
+				{
+					if (e.getStateChange() == ItemEvent.SELECTED)
+					{
+						comboBox.setForeground(Color.white);
+						comboBox.setBackground(Color.darkGray);
+						if (e.getItem().equals("new set"))
+						{
+							String x = JOptionPane.showInputDialog(null, "enter set name");
+							if (x == null)
+							{
+								x = "default set";
+							}
+							if (x == "new set")
+							{
+								x = "default set";
+							}
+							for (int i = 0; i < comboBox.getItemCount() - 1; i++)
+							{
+								if (comboBox.getItemAt(i).equals(x))
+								{
+									JOptionPane.showMessageDialog(null, "Set already exists");
+									return;
+								}
+							}
+							try
+							{
+								Files.createFile(Paths.get(path + "/" + x + ".txt"));
+							}
+							catch (IOException ex)
+							{
+								ex.printStackTrace();
+							}
+							Setup setup = new Setup(x);
+							plugin.setupList.add(setup);
+							try
+							{
+								plugin.writeSetupToFile(setup);
+							}
+							catch (IOException ex)
+							{
+								ex.printStackTrace();
+							}
+							comboBox.insertItemAt(x, Math.max(0, comboBox.getSelectedIndex()));
+							comboBox.setSelectedIndex(comboBox.getItemCount() - 2);
+						}
+						else
+						{
+							Setup setup =
+									plugin.setupList.stream().filter(x -> x.name.equals(e.getItem().toString())).findFirst().orElse(null);
+							if (setup != null)
+							{
+								//							client.getLogger().warn("found setup with name: " + setup.name + " loading");
+								String commands = "";
+								for (String command : setup.commands)
+								{
+									commands += command + "\n";
+								}
+								commands = commands.isBlank() ? "" : commands.trim();
+								//							client.getLogger().warn("loading commands: " + commands);
+								textArea.setText(commands);
+								//							client.getLogger().warn("loading hotkey: " + setup.keybind.toString());
+
+								hkbutton2.setValue(setup.keybind);
+								if (setup.enabled)
+								{
+									enable.setText("Disable");
+								}
+								else
+								{
+									enable.setText("Enable");
+								}
+							}
+						}
+						update(getGraphics());
+					}
+				}
+			}
+		});
 		add(comboBox, BorderLayout.NORTH);
 		add(panel, BorderLayout.CENTER);
 		add(textArea, BorderLayout.SOUTH);
