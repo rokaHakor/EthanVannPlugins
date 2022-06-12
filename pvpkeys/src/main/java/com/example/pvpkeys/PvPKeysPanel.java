@@ -180,35 +180,38 @@ public class PvPKeysPanel extends PluginPanel
 		comboBox.addItem("new set");
 		button.addActionListener(e ->
 		{
-			if (comboBox.getSelectedItem().equals("new set"))
+			if(comboBox!=null&&comboBox.getSelectedItem()!=null)
 			{
-				return;
-			}
-			else
-			{
-				try
+				if (comboBox.getSelectedItem().equals("new set"))
 				{
-					Files.delete(path.resolve(comboBox.getSelectedItem().toString() + ".txt"));
+					return;
 				}
-				catch (IOException ex)
+				else
 				{
-					JOptionPane.showMessageDialog(null, "Error Removing Set");
-					ex.printStackTrace();
-				}
-				for (int i = plugin.setupList.size() - 1; i >= 0; i--)
-				{
-					if (plugin.setupList.get(i).name.equals(comboBox.getSelectedItem().toString()))
+					try
 					{
-						plugin.setupList.remove(i);
+						Files.delete(path.resolve(comboBox.getSelectedItem().toString() + ".txt"));
 					}
+					catch (IOException ex)
+					{
+						JOptionPane.showMessageDialog(null, "Error Removing Set");
+						ex.printStackTrace();
+					}
+					for (int i = plugin.setupList.size() - 1; i >= 0; i--)
+					{
+						if (plugin.setupList.get(i).name.equals(comboBox.getSelectedItem().toString()))
+						{
+							plugin.setupList.remove(i);
+						}
+					}
+					comboBox.removeItemAt(comboBox.getSelectedIndex());
+					plugin.updateHotkeys();
+					//				button.updateUI();
+					//				comboBox.updateUI();
+					//				display.updateUI();
+					//				hkbutton2.update(this.getGraphics());
+					update(getGraphics());
 				}
-				comboBox.removeItemAt(comboBox.getSelectedIndex());
-				plugin.updateHotkeys();
-				//				button.updateUI();
-				//				comboBox.updateUI();
-				//				display.updateUI();
-				//				hkbutton2.update(this.getGraphics());
-				update(getGraphics());
 			}
 		});
 		hkbutton2 = createKeybind();
@@ -218,79 +221,82 @@ public class PvPKeysPanel extends PluginPanel
 			@Override
 			public void itemStateChanged(ItemEvent e)
 			{
-				if (e.getStateChange() == ItemEvent.SELECTED)
+				if (comboBox != null&&enable!=null&&hkbutton2!=null)
 				{
-					comboBox.setForeground(Color.white);
-					comboBox.setBackground(Color.darkGray);
-					if (e.getItem().equals("new set"))
+					if (e.getStateChange() == ItemEvent.SELECTED)
 					{
-						String x = JOptionPane.showInputDialog(null, "enter set name");
-						if (x == null)
+						comboBox.setForeground(Color.white);
+						comboBox.setBackground(Color.darkGray);
+						if (e.getItem().equals("new set"))
 						{
-							x = "default set";
-						}
-						if (x == "new set")
-						{
-							x = "default set";
-						}
-						for (int i = 0; i < comboBox.getItemCount() - 1; i++)
-						{
-							if (comboBox.getItemAt(i).equals(x))
+							String x = JOptionPane.showInputDialog(null, "enter set name");
+							if (x == null)
 							{
-								JOptionPane.showMessageDialog(null, "Set already exists");
-								return;
+								x = "default set";
 							}
-						}
-						try
-						{
-							Files.createFile(Paths.get(path + "/" + x + ".txt"));
-						}
-						catch (IOException ex)
-						{
-							ex.printStackTrace();
-						}
-						Setup setup = new Setup(x);
-						plugin.setupList.add(setup);
-						try
-						{
-							plugin.writeSetupToFile(setup);
-						}
-						catch (IOException ex)
-						{
-							ex.printStackTrace();
-						}
-						comboBox.insertItemAt(x, Math.max(0, comboBox.getSelectedIndex()));
-						comboBox.setSelectedIndex(comboBox.getItemCount() - 2);
-					}
-					else
-					{
-						Setup setup =
-								plugin.setupList.stream().filter(x -> x.name.equals(e.getItem().toString())).findFirst().orElse(null);
-						if (setup != null)
-						{
-//							client.getLogger().warn("found setup with name: " + setup.name + " loading");
-							String commands = "";
-							for (String command : setup.commands)
+							if (x == "new set")
 							{
-								commands += command + "\n";
+								x = "default set";
 							}
-							commands = commands.isBlank() ? "" : commands.trim();
-//							client.getLogger().warn("loading commands: " + commands);
-							textArea.setText(commands);
-//							client.getLogger().warn("loading hotkey: " + setup.keybind.toString());
+							for (int i = 0; i < comboBox.getItemCount() - 1; i++)
+							{
+								if (comboBox.getItemAt(i).equals(x))
+								{
+									JOptionPane.showMessageDialog(null, "Set already exists");
+									return;
+								}
+							}
+							try
+							{
+								Files.createFile(Paths.get(path + "/" + x + ".txt"));
+							}
+							catch (IOException ex)
+							{
+								ex.printStackTrace();
+							}
+							Setup setup = new Setup(x);
+							plugin.setupList.add(setup);
+							try
+							{
+								plugin.writeSetupToFile(setup);
+							}
+							catch (IOException ex)
+							{
+								ex.printStackTrace();
+							}
+							comboBox.insertItemAt(x, Math.max(0, comboBox.getSelectedIndex()));
+							comboBox.setSelectedIndex(comboBox.getItemCount() - 2);
+						}
+						else
+						{
+							Setup setup =
+									plugin.setupList.stream().filter(x -> x.name.equals(e.getItem().toString())).findFirst().orElse(null);
+							if (setup != null)
+							{
+								//							client.getLogger().warn("found setup with name: " + setup.name + " loading");
+								String commands = "";
+								for (String command : setup.commands)
+								{
+									commands += command + "\n";
+								}
+								commands = commands.isBlank() ? "" : commands.trim();
+								//							client.getLogger().warn("loading commands: " + commands);
+								textArea.setText(commands);
+								//							client.getLogger().warn("loading hotkey: " + setup.keybind.toString());
 
-							hkbutton2.setValue(setup.keybind);
-							if (setup.enabled)
-							{
-								enable.setText("Disable");
-							}
-							else
-							{
-								enable.setText("Enable");
+								hkbutton2.setValue(setup.keybind);
+								if (setup.enabled)
+								{
+									enable.setText("Disable");
+								}
+								else
+								{
+									enable.setText("Enable");
+								}
 							}
 						}
+						update(getGraphics());
 					}
-					update(getGraphics());
 				}
 			}
 		};
