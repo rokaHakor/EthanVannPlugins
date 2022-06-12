@@ -350,7 +350,7 @@ public class pvpkeys extends Plugin
 						break;
 					case "spec":
 						mousePackets.queueClickPacket();
-						widgetPackets.queueWidgetActionPacket(1, 10485791, -1, -1);
+						widgetPackets.queueWidgetActionPacket(1, 38862884, -1, -1);
 						break;
 					case "tick":
 						int delay;
@@ -539,10 +539,8 @@ public class pvpkeys extends Plugin
 				if (spriteID == SpriteID.SKILL_HITPOINTS)
 				{
 					String hitsplat = Text.removeTags(text.getText()).trim();
-					addchat(hitsplat);
 					int xp = Integer.parseInt(hitsplat);
 					int hit = (int) Math.round(xp / 1.33);
-					addchat("Recorded hit: " + hit);
 					if (hit >= hitTrigger && xpDropCommands != null)
 					{
 						queuedCommands.put(client.getTickCount(), xpDropCommands);
