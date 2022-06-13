@@ -27,6 +27,7 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -73,7 +74,7 @@ public class pvpkeys extends Plugin
 	@Inject
 	private ClientToolbar clientToolbar;
 	@Inject
-	private ClientThread clientThread;
+	public ClientThread clientThread;
 	private ConcurrentHashMap<Integer, String[]> queuedCommands = new ConcurrentHashMap<>();
 	@Inject
 	WidgetPackets widgetPackets;
@@ -83,6 +84,8 @@ public class pvpkeys extends Plugin
 	NPCPackets npcPackets;
 	@Inject
 	PlayerPackets playerPackets;
+	@Inject
+	ItemManager itemManager;
 	@Inject
 	MousePackets mousePackets;
 	@Inject
