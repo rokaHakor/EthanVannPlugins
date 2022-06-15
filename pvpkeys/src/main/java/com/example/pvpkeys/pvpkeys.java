@@ -555,12 +555,12 @@ public class pvpkeys extends Plugin
 			{
 				target =
 						client.getNpcs().stream().filter(p -> p.getIndex() == event.getMenuEntry().getIdentifier()).findFirst().orElse(null);
-				client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "set target to " + target.getName(), null);
+				//client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "set target to " + target.getName(), null);
 			}
 			if (playerAction.contains(event.getMenuAction().getId()))
 			{
 				target = client.getPlayers().stream().filter(p -> p.getId() == event.getMenuEntry().getIdentifier()).findFirst().orElse(null);
-				client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "set target to " + target.getName(), null);
+				//client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "set target to " + target.getName(), null);
 			}
 		}
 	}
