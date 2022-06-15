@@ -5,7 +5,6 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
@@ -15,10 +14,11 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginInstantiationException;
+import net.runelite.client.ui.ClientUI;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
-import java.awt.*;
+import javax.swing.*;
 
 import static net.runelite.client.externalplugins.ExternalPluginManager.pluginManager;
 
@@ -39,7 +39,7 @@ public class PacketUtilsPlugin extends Plugin {
     PacketReflection packetReflection;
     @Inject
     ClientThread thread;
-    private int rev = 205;
+    public static final int CLIENT_REV = 205;
     private static boolean loaded = false;
     @Inject
     private PacketUtilsConfig config;
@@ -72,16 +72,14 @@ public class PacketUtilsPlugin extends Plugin {
     @Override
     @SneakyThrows
     public void startUp() {
-        if (client.getRevision() != rev) {
-            client.getLogger().warn("PacketUtils is not compatible with this client version. Please update to the latest version.");
-            thread.invokeLater(() ->
-                    client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "plugin not updated for this rev please wait for plugin update", null));
-            this.shutDown();
-            EventQueue.invokeAndWait(() -> {
+        if (client.getRevision() != CLIENT_REV) {
+            log.warn("PacketUtils is not compatible with this client version. Please update to the latest version.");
+            SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(ClientUI.getFrame(), "PacketUtils not updated for this rev please wait for plugin update");
                 try {
+                    pluginManager.setPluginEnabled(this, false);
                     pluginManager.stopPlugin(this);
-                } catch (PluginInstantiationException ex) {
-                    ex.printStackTrace();
+                } catch (PluginInstantiationException ignored) {
                 }
             });
             return;
@@ -96,6 +94,7 @@ public class PacketUtilsPlugin extends Plugin {
 
     @Override
     public void shutDown() {
+        log.info("Shutdown");
         loaded = false;
     }
 }

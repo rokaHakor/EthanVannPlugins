@@ -3,7 +3,11 @@ package com.example.PrayerFlicker;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
 import lombok.SneakyThrows;
-import net.runelite.api.*;
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Buffer;
+import net.runelite.api.Client;
+import net.runelite.api.GameState;
+import net.runelite.api.Varbits;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
@@ -15,10 +19,11 @@ import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginInstantiationException;
+import net.runelite.client.ui.ClientUI;
 import net.runelite.client.util.HotkeyListener;
 import org.pf4j.Extension;
 
-import java.awt.*;
+import javax.swing.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,6 +38,7 @@ import static net.runelite.client.externalplugins.ExternalPluginManager.pluginMa
         enabledByDefault = false
 )
 @Extension
+@Slf4j
 public class PrayerFlickerPlugin extends Plugin {
     public int timeout = 0;
     @Inject
@@ -147,13 +153,12 @@ public class PrayerFlickerPlugin extends Plugin {
     @SneakyThrows
     public void startUp() {
         if (client.getRevision() != rev) {
-            clientThread.invokeLater(() -> client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "plugin not updated for this rev please wait for plugin update", null));
-            this.shutDown();
-            EventQueue.invokeAndWait(() -> {
+            SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(ClientUI.getFrame(), "prayer flicker not updated for this rev please wait for plugin update");
                 try {
+                    pluginManager.setPluginEnabled(this, false);
                     pluginManager.stopPlugin(this);
-                } catch (PluginInstantiationException ex) {
-                    ex.printStackTrace();
+                } catch (PluginInstantiationException ignored) {
                 }
             });
             return;
@@ -163,6 +168,7 @@ public class PrayerFlickerPlugin extends Plugin {
 
     @Override
     public void shutDown() {
+        log.info("Shutdown");
         loaded = false;
         keyManager.unregisterKeyListener(prayerToggle);
         toggle = false;
@@ -181,7 +187,7 @@ public class PrayerFlickerPlugin extends Plugin {
 
     public void switchAndUpdatePrayers(int i) {
         queueClickPacket();
-        queueWidgetPacket(5046276, -1, i);
+        queueWidgetPacket(WidgetInfo.QUICK_PRAYER_PRAYERS.getId(), -1, i);
         togglePrayer();
         togglePrayer();
     }

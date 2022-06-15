@@ -18,6 +18,7 @@ import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginInstantiationException;
 import net.runelite.client.ui.ClientToolbar;
+import net.runelite.client.ui.ClientUI;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.util.HotkeyListener;
 import net.runelite.client.util.Text;
@@ -26,7 +27,6 @@ import org.pf4j.Extension;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +34,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -87,7 +86,6 @@ public class pvpkeys extends Plugin {
     ConcurrentHashMap<String, ListenerKeyPair> hotkeyListenerList = new ConcurrentHashMap<>();
     @Inject
     Client client;
-    int rev = 205;
 
     public pvpkeys() throws IOException {
     }
@@ -106,20 +104,17 @@ public class pvpkeys extends Plugin {
                 .priority(4)
                 .build();
         clientToolbar.addNavigation(navButton);
-        if (client.getRevision() != rev) {
-            JOptionPane.showMessageDialog(null, "pvpkeys not updated for this rev please wait for plugin update");
-            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "plugin not updated for this rev please wait for plugin update", null);
-            this.shutDown();
-            EventQueue.invokeLater(() ->
-            {
-                try {
-                    pluginManager.stopPlugin(this);
-                } catch (PluginInstantiationException ex) {
-                    ex.printStackTrace();
-                }
-            });
-            return;
-        }
+//        if (client.getRevision() != PacketUtilsPlugin.CLIENT_REV) {
+//            SwingUtilities.invokeLater(() -> {
+//                JOptionPane.showMessageDialog(ClientUI.getFrame(), "pvpkeys not updated for this rev please wait for plugin update");
+//                try {
+//                    pluginManager.setPluginEnabled(this, false);
+//                    pluginManager.stopPlugin(this);
+//                } catch (PluginInstantiationException ignored) {
+//                }
+//            });
+//            return;
+//        }
     }
 
 
@@ -264,7 +259,7 @@ public class pvpkeys extends Plugin {
                             mousePackets.queueClickPacket();
                             widgetPackets.queueWidgetActionPacket(2, 10485775, -1, -1);
                             MenuEntry x =
-                                    client.createMenuEntry(-1).setParam1(5046276).setType(MenuAction.RUNELITE).setOption("Quick Prayer Update");
+                                    client.createMenuEntry(-1).setParam1(WidgetInfo.QUICK_PRAYER_PRAYERS.getId()).setType(MenuAction.RUNELITE).setOption("Quick Prayer Update");
                             eventBus.post(new MenuOptionClicked(x));
                         }
                         if (args[0].equals("on")) {
@@ -272,20 +267,20 @@ public class pvpkeys extends Plugin {
                             QuickPrayer prayer = QuickPrayer.valueOf(args[1]);
                             if (!isQuickPrayerActive(prayer)) {
                                 mousePackets.queueClickPacket();
-                                widgetPackets.queueWidgetActionPacket(1, 5046276, -1, prayer.getIndex());
+                                widgetPackets.queueWidgetActionPacket(1, WidgetInfo.QUICK_PRAYER_PRAYERS.getId(), -1, prayer.getIndex());
                             }
                         } else if (args[0].equals("off")) {
                             args[1] = args[1].replaceAll(" ", "_").toUpperCase();
                             QuickPrayer prayer = QuickPrayer.valueOf(args[1]);
                             if (isQuickPrayerActive(prayer)) {
                                 mousePackets.queueClickPacket();
-                                widgetPackets.queueWidgetActionPacket(1, 5046276, -1, prayer.getIndex());
+                                widgetPackets.queueWidgetActionPacket(1, WidgetInfo.QUICK_PRAYER_PRAYERS.getId(), -1, prayer.getIndex());
                             }
                         } else if (args[0].equals("toggle")) {
                             args[1] = args[1].replaceAll(" ", "_").toUpperCase();
                             QuickPrayer prayer = QuickPrayer.valueOf(args[1]);
                             mousePackets.queueClickPacket();
-                            widgetPackets.queueWidgetActionPacket(1, 5046276, -1, prayer.getIndex());
+                            widgetPackets.queueWidgetActionPacket(1, WidgetInfo.QUICK_PRAYER_PRAYERS.getId(), -1, prayer.getIndex());
                         }
                         if (client.getWidget(WidgetInfo.QUICK_PRAYER_PRAYERS) == null) {
                             mousePackets.queueClickPacket();
