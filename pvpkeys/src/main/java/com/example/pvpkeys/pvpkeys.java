@@ -104,17 +104,17 @@ public class pvpkeys extends Plugin {
                 .priority(4)
                 .build();
         clientToolbar.addNavigation(navButton);
-//        if (client.getRevision() != PacketUtilsPlugin.CLIENT_REV) {
-//            SwingUtilities.invokeLater(() -> {
-//                JOptionPane.showMessageDialog(ClientUI.getFrame(), "pvpkeys not updated for this rev please wait for plugin update");
-//                try {
-//                    pluginManager.setPluginEnabled(this, false);
-//                    pluginManager.stopPlugin(this);
-//                } catch (PluginInstantiationException ignored) {
-//                }
-//            });
-//            return;
-//        }
+        if (client.getRevision() != PacketUtilsPlugin.CLIENT_REV) {
+            SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(ClientUI.getFrame(), "pvpkeys not updated for this rev please wait for plugin update");
+                try {
+                    pluginManager.setPluginEnabled(this, false);
+                    pluginManager.stopPlugin(this);
+                } catch (PluginInstantiationException ignored) {
+                }
+            });
+            return;
+        }
     }
 
 
