@@ -12,6 +12,17 @@ project.extra["GithubUrl"] = "https://github.com/Ethan-Vann/EthanVannPlugins"
 
 apply<BootstrapPlugin>()
 
+allprojects {
+    group = "com.openosrs"
+    apply<MavenPublishPlugin>()
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+}
+
 subprojects {
     group = "com.example"
 
