@@ -188,10 +188,19 @@ public class PrayerFlickerPlugin2 extends Plugin
 		togglePrayer();
 		togglePrayer();
 	}
+	public void updatePrayers(){
+		togglePrayer();
+		togglePrayer();
+	}
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event){
 		if(toggle) {
 			if (event.getWidgetId() == 5046276) {
+				if(event.getMenuOption().equals("Quick Prayer Update")){
+					updatePrayers();
+					event.consume();
+					return;
+				}
 				event.consume();
 				switchAndUpdatePrayers(event.getActionParam());
 			}

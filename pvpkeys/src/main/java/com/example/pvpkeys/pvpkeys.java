@@ -5,6 +5,7 @@ import com.example.PacketUtils.Packets.MovementPackets;
 import com.example.PacketUtils.Packets.NPCPackets;
 import com.example.PacketUtils.Packets.PlayerPackets;
 import com.example.PacketUtils.Packets.WidgetPackets;
+import com.google.common.collect.Range;
 import com.google.inject.Inject;
 import net.runelite.api.Actor;
 import net.runelite.api.ChatMessageType;
@@ -51,6 +52,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -90,10 +92,11 @@ public class pvpkeys extends Plugin
 	MousePackets mousePackets;
 	@Inject
 	MovementPackets movementPackets;
+	boolean lastTarget = false;
 	String[] xpDropCommands = null;
 	int hitTrigger = 0;
 	int xp = -1;
-	ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+	ScheduledExecutorService executor;
 	Actor target = null;
 	private PvPKeysPanel panel;
 	Path path = Files.createDirectories(Paths.get(RUNELITE_DIR + "/PvPKeys/"));
@@ -114,6 +117,9 @@ public class pvpkeys extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
+		readConfig();
+		writeConfig();
+		executor = Executors.newScheduledThreadPool(1);
 		final BufferedImage icon = ImageIO.read(getFileFromResourceAsStream("73.png"));
 		panel = new PvPKeysPanel(client,this);
 		navButton = NavigationButton.builder()
@@ -142,6 +148,7 @@ public class pvpkeys extends Plugin
 			return;
 		}
 	}
+
 
 	InputStream getFileFromResourceAsStream(String fileName)
 	{
@@ -320,6 +327,9 @@ public class pvpkeys extends Plugin
 						if(client.getWidget(WidgetInfo.QUICK_PRAYER_PRAYERS)==null){
 							mousePackets.queueClickPacket();
 							widgetPackets.queueWidgetActionPacket(2,10485775,-1,-1);
+							MenuEntry x =
+									client.createMenuEntry(-1).setParam1(5046276).setType(MenuAction.RUNELITE).setOption("Quick Prayer Update");
+							eventBus.post(new MenuOptionClicked(x));
 						}
 						if (args[0].equals("on"))
 						{
@@ -534,6 +544,27 @@ public class pvpkeys extends Plugin
 	}
 
 	@Subscribe
+	public void onMenuOptionClicked(MenuOptionClicked event)
+	{
+		if(lastTarget)
+		{
+			int id = event.getMenuAction().getId();
+			Range<Integer> npcAction = Range.closed(MenuAction.NPC_FIRST_OPTION.getId(), MenuAction.NPC_FIFTH_OPTION.getId());
+			Range<Integer> playerAction = Range.closed(MenuAction.PLAYER_FIRST_OPTION.getId(), MenuAction.PLAYER_EIGTH_OPTION.getId());
+			if (npcAction.contains(event.getMenuAction().getId()))
+			{
+				target =
+						client.getNpcs().stream().filter(p -> p.getIndex() == event.getMenuEntry().getIdentifier()).findFirst().orElse(null);
+				client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "set target to " + target.getName(), null);
+			}
+			if (playerAction.contains(event.getMenuAction().getId()))
+			{
+				target = client.getPlayers().stream().filter(p -> p.getId() == event.getMenuEntry().getIdentifier()).findFirst().orElse(null);
+				client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "set target to " + target.getName(), null);
+			}
+		}
+	}
+	@Subscribe
 	public void onMenuEntryAdded(MenuEntryAdded event)
 	{
 		if (event.getType() == MenuAction.PLAYER_THIRD_OPTION.getId())
@@ -621,6 +652,9 @@ public class pvpkeys extends Plugin
 	protected void shutDown() throws Exception
 	{
 		clientToolbar.removeNavigation(navButton);
+		setupList.clear();
+		executor.shutdown();
+		updateHotkeys();
 	}
 
 	public Widget getItem(int id)
@@ -701,6 +735,37 @@ public class pvpkeys extends Plugin
 			}
 		}
 		return true;
+	}
+	public void writeConfig() throws IOException
+	{
+		String output = "";
+		output += lastTarget ? "true" : "false";
+		Files.write(path.resolve("pvpkeys.config"),
+				output.getBytes(StandardCharsets.UTF_8));
+	}
+	public void readConfig() throws IOException
+	{
+		Files.walk(path).forEach(filePath ->{
+			if (Files.isRegularFile(filePath)){
+				if(filePath.getFileName().toString().equals("pvpkeys.config")){
+					List<String> lines = Collections.emptyList();
+					try
+					{
+						lines = Files.readAllLines(filePath);
+					}
+					catch (IOException e)
+					{
+						e.printStackTrace();
+					}
+					if(lines.size()>0&&lines.get(0).equals("true")){
+						lastTarget = true;
+					}
+					else{
+						lastTarget = false;
+					}
+				}
+			}
+		});
 	}
 
 	public void addchat(String text)

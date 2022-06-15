@@ -60,7 +60,6 @@ public class PvPKeysPanel extends PluginPanel
 	HotkeyButton2 hkbutton2;
 	JPanel panel = new JPanel();
 	JPanel panel2 = new JPanel();
-	JPanel panel3 = new JPanel();
 
 	PvPKeysPanel(Client client, pvpkeys plugin) throws IOException
 	{
@@ -131,39 +130,42 @@ public class PvPKeysPanel extends PluginPanel
 		{
 			if (Files.isRegularFile(filePath))
 			{
-				comboBox.addItem(filePath.getFileName().toString().split("\\.")[0]);
-				Setup setup = new Setup(filePath.getFileName().toString().split("\\.")[0]);
-				List<String> commands = new ArrayList<>();
-				try
+				if (filePath.getFileName().toString().endsWith(".txt"))
 				{
-					List<String> lines = Files.readAllLines(filePath);
-					for (String line : lines)
+					comboBox.addItem(filePath.getFileName().toString().split("\\.")[0]);
+					Setup setup = new Setup(filePath.getFileName().toString().split("\\.")[0]);
+					List<String> commands = new ArrayList<>();
+					try
 					{
-						if (line.contains("keybind"))
+						List<String> lines = Files.readAllLines(filePath);
+						for (String line : lines)
 						{
-							String[] keybind = line.split(":")[1].split(",");
-							setup.keybind = new Keybind(Integer.parseInt(keybind[0]), Integer.parseInt(keybind[1]));
-						}
-						if (line.contains("enabled"))
-						{
-							setup.enabled = Boolean.parseBoolean(line.split(":")[1].trim());
-						}
-						if (line.contains("command"))
-						{
-							if (line.split(":").length == 2)
+							if (line.contains("keybind"))
 							{
-								commands.add(line.split(":")[1]);
+								String[] keybind = line.split(":")[1].split(",");
+								setup.keybind = new Keybind(Integer.parseInt(keybind[0]), Integer.parseInt(keybind[1]));
+							}
+							if (line.contains("enabled"))
+							{
+								setup.enabled = Boolean.parseBoolean(line.split(":")[1].trim());
+							}
+							if (line.contains("command"))
+							{
+								if (line.split(":").length == 2)
+								{
+									commands.add(line.split(":")[1]);
+								}
 							}
 						}
+						setup.commands = commands.toArray(new String[0]);
+						plugin.setupList.add(setup);
 					}
-					setup.commands = commands.toArray(new String[0]);
-					plugin.setupList.add(setup);
-				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
-				}
+					catch (IOException e)
+					{
+						e.printStackTrace();
+					}
 
+				}
 			}
 		});
 		if (comboBox.getItemCount() == 0)
@@ -435,12 +437,38 @@ public class PvPKeysPanel extends PluginPanel
 				ex.printStackTrace();
 			}
 		});
+		JCheckBox lastTarget = new JCheckBox("Last Target");
+		if(plugin.lastTarget)
+		{
+			lastTarget.setSelected(true);
+		}
+
+		lastTarget.addActionListener(e ->
+		{
+			if (lastTarget.isSelected())
+			{
+				plugin.lastTarget = true;
+			}
+			else
+			{
+				plugin.lastTarget = false;
+			}
+			try
+			{
+				plugin.writeConfig();
+			}
+			catch (IOException ex)
+			{
+				ex.printStackTrace();
+			}
+		});
 		panel2.add(comboBox, BorderLayout.NORTH);
 		panel2.add(gearButton, BorderLayout.CENTER);
-		add(panel, BorderLayout.SOUTH);
 		panel2.add(docs, BorderLayout.SOUTH);
+		panel2.add(lastTarget,BorderLayout.EAST);
 		textArea.setMinimumSize(new Dimension(0, 300));
 		add(panel2, BorderLayout.NORTH);
+		add(panel, BorderLayout.SOUTH);
 		panel2.setVisible(true);
 		JScrollPane pane = new JScrollPane(textArea);
 		panel.add(pane, BorderLayout.SOUTH);
