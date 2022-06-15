@@ -1,1 +1,66 @@
-[{"projectUrl":"","provider":"EthanVann","name":"gloc rc helper","description":"Makes ring of the elements use equipped dueling ring tele to cwars if you're at an altar","id":"glocrchelper-plugin","releases":[{"date":"2022-06-11","sha512sum":"8ABB12B9E3E73774A897AD8191EEC9048A241A35E3FF7033AEE75F2F1C5D25DC886A34B5C011E4BEDA8CDD94B3C9DE7E947D929CE1589343FB1327894CD367B4","version":"0.0.1","url":"https://github.com/Ethan-Vann/EthanVannPlugins/blob/master/release/GlocRCHelper-0.0.1.jar?raw=true","requires":"^1.0.0"}]}, {"projectUrl":"","provider":"EthanVann","name":"Packet Utils","description":"packet utilities","id":"packetutils-plugin","releases":[{"date":"2022-06-15","sha512sum":"3AC307CD4EBECBEC7FFFB6EF0539343454FF65DDB64A0B29912332FDED494DCCE72DF1F4186EA24A2FA66BB388FD19D91E5F7EE7FFB31713D31866F0922A2033","version":"0.0.8","url":"https://github.com/Ethan-Vann/EthanVannPlugins/blob/master/release/PacketUtils-0.0.8.jar?raw=true","requires":"^1.0.0"}]}, {"projectUrl":"","provider":"EthanVann","name":"PrayerFlickerPlugin","description":"1 tick flicks quick prayers on a toggle","id":"prayerflickerplugin-plugin","releases":[{"date":"2022-06-15","sha512sum":"1D7AB84F05AC2CD3222B6D95D6431156A154B0DBE8D46F4C4D58A177F8418F6644308A0CE80BA8732D0605EB30B8A13C0A843734D9E8823E302C9731EC885B98","version":"0.0.10","url":"https://github.com/Ethan-Vann/EthanVannPlugins/blob/master/release/PrayerFlicker-0.0.10.jar?raw=true","requires":"^1.0.0"}]}, {"projectUrl":"","provider":"EthanVann","name":"PvP Keys","description":"Helpful Keys for PvP","id":"pvpkeys-plugin","releases":[{"date":"2022-06-15","sha512sum":"586E0C0976154CB0683A92CD9A64DCED35B09624581166364496CCB8ADF3319E9EF996E3BE2E7DC7C294041FB6A3C1A6931CF20EEA8897C3CA407A31B4D4692D","version":"0.0.14","url":"https://github.com/Ethan-Vann/EthanVannPlugins/blob/master/release/pvpkeys-0.0.14.jar?raw=true","requires":"^1.0.0"}]}]
+[
+  {
+    "projectUrl": "",
+    "provider": "EthanVann",
+    "name": "gloc rc helper",
+    "description": "Makes ring of the elements use equipped dueling ring tele to cwars if you're at an altar",
+    "id": "glocrchelper-plugin",
+    "releases": [
+      {
+        "date": "2022-06-11",
+        "sha512sum": "8ABB12B9E3E73774A897AD8191EEC9048A241A35E3FF7033AEE75F2F1C5D25DC886A34B5C011E4BEDA8CDD94B3C9DE7E947D929CE1589343FB1327894CD367B4",
+        "version": "0.0.1",
+        "url": "https://github.com/Ethan-Vann/EthanVannPlugins/blob/master/release/GlocRCHelper-0.0.1.jar?raw=true",
+        "requires": "^1.0.0"
+      }
+    ]
+  },
+  {
+    "projectUrl": "",
+    "provider": "EthanVann",
+    "name": "Packet Utils",
+    "description": "packet utilities",
+    "id": "packetutils-plugin",
+    "releases": [
+      {
+        "date": "2022-06-15",
+        "sha512sum": "3AC307CD4EBECBEC7FFFB6EF0539343454FF65DDB64A0B29912332FDED494DCCE72DF1F4186EA24A2FA66BB388FD19D91E5F7EE7FFB31713D31866F0922A2033",
+        "version": "0.0.8",
+        "url": "https://github.com/Ethan-Vann/EthanVannPlugins/blob/master/release/PacketUtils-0.0.8.jar?raw=true",
+        "requires": "^1.0.0"
+      }
+    ]
+  },
+  {
+    "projectUrl": "",
+    "provider": "EthanVann",
+    "name": "PrayerFlickerPlugin",
+    "description": "1 tick flicks quick prayers on a toggle",
+    "id": "prayerflickerplugin-plugin",
+    "releases": [
+      {
+        "date": "2022-06-15",
+        "sha512sum": "1D7AB84F05AC2CD3222B6D95D6431156A154B0DBE8D46F4C4D58A177F8418F6644308A0CE80BA8732D0605EB30B8A13C0A843734D9E8823E302C9731EC885B98",
+        "version": "0.0.10",
+        "url": "https://github.com/Ethan-Vann/EthanVannPlugins/blob/master/release/PrayerFlicker-0.0.10.jar?raw=true",
+        "requires": "^1.0.0"
+      }
+    ]
+  },
+  {
+    "projectUrl": "",
+    "provider": "EthanVann",
+    "name": "PvP Keys",
+    "description": "Helpful Keys for PvP",
+    "id": "pvpkeys-plugin",
+    "releases": [
+      {
+        "date": "2022-06-15",
+        "sha512sum": "586E0C0976154CB0683A92CD9A64DCED35B09624581166364496CCB8ADF3319E9EF996E3BE2E7DC7C294041FB6A3C1A6931CF20EEA8897C3CA407A31B4D4692D",
+        "version": "0.0.14",
+        "url": "https://github.com/Ethan-Vann/EthanVannPlugins/blob/master/release/pvpkeys-0.0.14.jar?raw=true",
+        "requires": "^1.0.0"
+      }
+    ]
+  }
+]

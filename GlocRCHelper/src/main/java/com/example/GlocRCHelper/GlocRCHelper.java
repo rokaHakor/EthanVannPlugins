@@ -27,16 +27,17 @@ import java.util.stream.Collectors;
 public class GlocRCHelper extends Plugin {
     @Inject
     private Client client;
+
     @Subscribe
     public void onMenuOptionClicked(MenuOptionClicked menuOptionClicked) {
-            if (menuOptionClicked.getItemId() == 26818) {
-                GameObjectQuery x = new GameObjectQuery();
-                LocatableQueryResults results = x.nameEquals("Altar").result(client);
-                if (results.size() > 0) {
-                    Widget widget = client.getWidget(WidgetInfo.EQUIPMENT_RING);
-                    menuOptionClicked.setMenuEntry(createMenuEntry(Arrays.stream(widget.getActions()).collect(Collectors.toList()).indexOf("Castle Wars") + 1, MenuAction.CC_OP, widget.getIndex(), widget.getId(), true));
-                }
+        if (menuOptionClicked.getItemId() == 26818) {
+            GameObjectQuery x = new GameObjectQuery();
+            LocatableQueryResults results = x.nameEquals("Altar").result(client);
+            if (results.size() > 0) {
+                Widget widget = client.getWidget(WidgetInfo.EQUIPMENT_RING);
+                menuOptionClicked.setMenuEntry(createMenuEntry(Arrays.stream(widget.getActions()).collect(Collectors.toList()).indexOf("Castle Wars") + 1, MenuAction.CC_OP, widget.getIndex(), widget.getId(), true));
             }
+        }
     }
 
     public MenuEntry createMenuEntry(int identifier, MenuAction type, int param0, int param1, boolean forceLeftClick) {

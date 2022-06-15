@@ -28,7 +28,8 @@ import ProjectVersions.openosrsVersion
 version = "0.0.14"
 
 project.extra["PluginName"] = "PvP Keys" // This is the name that is used in the external plugin manager panel
-project.extra["PluginDescription"] = "Helpful Keys for PvP" // This is the description that is used in the external plugin manager panel
+project.extra["PluginDescription"] =
+    "Helpful Keys for PvP" // This is the description that is used in the external plugin manager panel
 
 dependencies {
     annotationProcessor(Libraries.lombok)
@@ -47,15 +48,17 @@ dependencies {
 tasks {
     jar {
         manifest {
-            attributes(mapOf(
-                "Plugin-Version" to project.version,
-                "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                "Plugin-Provider" to project.extra["PluginProvider"],
-                "Plugin-Dependencies" to
-                        arrayOf(nameToId("PacketUtils")).joinToString(),
-                "Plugin-Description" to project.extra["PluginDescription"],
-                "Plugin-License" to project.extra["PluginLicense"]
-            ))
+            attributes(
+                mapOf(
+                    "Plugin-Version" to project.version,
+                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
+                    "Plugin-Provider" to project.extra["PluginProvider"],
+                    "Plugin-Dependencies" to
+                            arrayOf(nameToId("PacketUtils")).joinToString(),
+                    "Plugin-Description" to project.extra["PluginDescription"],
+                    "Plugin-License" to project.extra["PluginLicense"]
+                )
+            )
         }
     }
 }

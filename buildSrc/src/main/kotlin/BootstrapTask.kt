@@ -1,8 +1,4 @@
 import com.savvasdalkitsis.jsonmerger.JsonMerger
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.extra
@@ -14,7 +10,6 @@ import java.nio.file.Paths
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 open class BootstrapTask : DefaultTask() {
 
@@ -23,7 +18,8 @@ open class BootstrapTask : DefaultTask() {
     }
 
     private fun hash(file: ByteArray): String {
-        return MessageDigest.getInstance("SHA-512").digest(file).fold("", { str, it -> str + "%02x".format(it) }).toUpperCase()
+        return MessageDigest.getInstance("SHA-512").digest(file).fold("", { str, it -> str + "%02x".format(it) })
+            .toUpperCase()
     }
 
     private fun getBootstrap(filename: String): JSONArray? {
@@ -41,7 +37,8 @@ open class BootstrapTask : DefaultTask() {
             bootstrapReleaseDir.mkdirs()
 
             val plugins = ArrayList<JSONObject>()
-            val baseBootstrap = getBootstrap("$bootstrapDir/plugins.json") ?: throw RuntimeException("Base bootstrap is null!")
+            val baseBootstrap =
+                getBootstrap("$bootstrapDir/plugins.json") ?: throw RuntimeException("Base bootstrap is null!")
 
             project.subprojects.forEach {
                 if (it.project.properties.containsKey("PluginName") && it.project.properties.containsKey("PluginDescription")) {
@@ -50,13 +47,15 @@ open class BootstrapTask : DefaultTask() {
 
                     val releases = ArrayList<JsonBuilder>()
 
-                    releases.add(JsonBuilder(
-                        "version" to it.project.version,
-                        "requires" to ProjectVersions.apiVersion,
-                        "date" to formatDate(Date()),
-                        "url" to "${project.rootProject.extra.get("GithubUrl")}/blob/master/release/${it.project.name}-${it.project.version}.jar?raw=true",
-                        "sha512sum" to hash(plugin.readBytes())
-                    ))
+                    releases.add(
+                        JsonBuilder(
+                            "version" to it.project.version,
+                            "requires" to ProjectVersions.apiVersion,
+                            "date" to formatDate(Date()),
+                            "url" to "${project.rootProject.extra.get("GithubUrl")}/blob/master/release/${it.project.name}-${it.project.version}.jar?raw=true",
+                            "sha512sum" to hash(plugin.readBytes())
+                        )
+                    )
 
                     val pluginObject = JsonBuilder(
                         "name" to it.project.extra.get("PluginName"),
@@ -68,7 +67,8 @@ open class BootstrapTask : DefaultTask() {
                     ).jsonObject()
 
                     for (i in 0 until baseBootstrap.length()) {
-                        val item = JSONObject(baseBootstrap.toString().substring(2, baseBootstrap.toString().length - 1));
+                        val item =
+                            JSONObject(baseBootstrap.toString().substring(2, baseBootstrap.toString().length - 1));
 
                         if (item.get("id") != nameToId(it.project.extra.get("PluginName") as String)) {
                             continue
@@ -80,16 +80,25 @@ open class BootstrapTask : DefaultTask() {
                             break
                         }
 
-                        plugins.add(JsonMerger(arrayMergeMode = JsonMerger.ArrayMergeMode.MERGE_ARRAY).merge(item, pluginObject))
+                        plugins.add(
+                            JsonMerger(arrayMergeMode = JsonMerger.ArrayMergeMode.MERGE_ARRAY).merge(
+                                item,
+                                pluginObject
+                            )
+                        )
                         pluginAdded = true
                     }
 
-                    if (!pluginAdded)
-                    {
+                    if (!pluginAdded) {
                         plugins.add(pluginObject)
                     }
 
-                    plugin.copyTo(Paths.get(bootstrapReleaseDir.toString(), "${it.project.name}-${it.project.version}.jar").toFile(), true)
+                    plugin.copyTo(
+                        Paths.get(
+                            bootstrapReleaseDir.toString(),
+                            "${it.project.name}-${it.project.version}.jar"
+                        ).toFile(), true
+                    )
                 }
             }
 
