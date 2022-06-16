@@ -26,6 +26,7 @@ import net.runelite.client.util.Text;
 import net.runelite.client.util.WildcardMatcher;
 import org.pf4j.Extension;
 
+import javax.annotation.Priority;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
@@ -484,7 +485,7 @@ public class pvpkeys extends Plugin {
     }
 
     //credit to https://github.com/geeckon/instant-damage-calculator/blob/master/src/main/java/com/geeckon/instantdamagecalculator/InstantDamageCalculatorPlugin.java
-    @Subscribe
+    @Subscribe(priority = 1000)
     public void onScriptPreFired(ScriptPreFired scriptPreFired) {
         if (scriptPreFired.getScriptId() == XPDROPS_SETDROPSIZE) {
             final int[] intStack = client.getIntStack();

@@ -1,5 +1,6 @@
 package com.example.PrayerFlicker;
 
+import com.example.PacketUtils.PacketUtilsPlugin;
 import com.example.PacketUtils.Packets.MousePackets;
 import com.example.PacketUtils.Packets.WidgetPackets;
 import com.google.inject.Inject;
@@ -19,6 +20,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginInstantiationException;
 import net.runelite.client.ui.ClientUI;
@@ -34,6 +36,7 @@ import java.util.stream.Collectors;
 
 import static net.runelite.client.externalplugins.ExternalPluginManager.pluginManager;
 
+@PluginDependency(PacketUtilsPlugin.class)
 @PluginDescriptor(
         name = "PrayerFlickerPlugin",
         description = "prayer flicker for quick prayers",
@@ -58,7 +61,6 @@ public class PrayerFlickerPlugin extends Plugin {
     @Inject
     MousePackets mousePackets;
     private final int quickPrayerWidgetID = WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId();
-
 
     @Provides
     public PrayerFlickerConfig getConfig(ConfigManager configManager) {
