@@ -28,6 +28,7 @@ include(":PrayerFlicker")
 include(":GlocRCHelper")
 include(":PacketUtils")
 include(":pvpkeys")
+//include(":RecordedClicker")
 for (project in rootProject.children) {
     project.apply {
         projectDir = file(name)

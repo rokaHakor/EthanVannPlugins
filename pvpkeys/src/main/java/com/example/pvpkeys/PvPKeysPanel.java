@@ -374,6 +374,24 @@ public class PvPKeysPanel extends PluginPanel {
         panel.add(hkbutton2, BorderLayout.NORTH);
         panel.setBackground(Color.darkGray);
         panel.setForeground(Color.darkGray);
+        JCheckBox highlightTarget = new JCheckBox("Highlight Target");
+        highlightTarget.addActionListener(e ->
+        {
+            if (highlightTarget.isSelected()) {
+                plugin.highlightTarget = true;
+            } else {
+                plugin.highlightTarget = false;
+            }
+            try {
+                plugin.writeConfig();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        if (plugin.highlightTarget) {
+            highlightTarget.setSelected(true);
+        }
+        add(highlightTarget, BorderLayout.EAST);
         textArea.setBorder(BorderFactory.createLineBorder(Color.white));
         if (comboBox.getSelectedItem() != null) {
             Setup setup =

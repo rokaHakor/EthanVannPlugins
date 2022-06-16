@@ -20,6 +20,7 @@ import net.runelite.client.plugins.PluginInstantiationException;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.ClientUI;
 import net.runelite.client.ui.NavigationButton;
+import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.HotkeyListener;
 import net.runelite.client.util.Text;
 import net.runelite.client.util.WildcardMatcher;
@@ -51,6 +52,7 @@ import static net.runelite.client.externalplugins.ExternalPluginManager.pluginMa
 @PluginDependency(PacketUtilsPlugin.class)
 @Extension
 public class pvpkeys extends Plugin {
+    public boolean highlightTarget = false;
     @Inject
     private ClientToolbar clientToolbar;
     @Inject
@@ -70,6 +72,9 @@ public class pvpkeys extends Plugin {
     MousePackets mousePackets;
     @Inject
     MovementPackets movementPackets;
+    @Inject
+    OverlayManager overlayManager;
+    PvpKeysOverlay overlay;
     boolean lastTarget = false;
     String[] xpDropCommands = null;
     int hitTrigger = 0;
@@ -92,6 +97,8 @@ public class pvpkeys extends Plugin {
 
     @Override
     protected void startUp() throws Exception {
+        overlay = new PvpKeysOverlay(this, client);
+        overlayManager.add(overlay);
         readConfig();
         writeConfig();
         executor = Executors.newScheduledThreadPool(1);
@@ -291,21 +298,11 @@ public class pvpkeys extends Plugin {
                             continue;
                         }
                         if (target instanceof NPC) {
-                            if (Arrays.asList(((NPC) target).getComposition().getActions()).contains("Attack")) {
-                                mousePackets.queueClickPacket();
-                                npcPackets.queueNPCAction((NPC) target, "Attack");
-                            } else {
                                 mousePackets.queueClickPacket();
                                 npcPackets.queueNPCAction(2, ((NPC) target).getIndex(), false);
-                            }
                         } else if (target instanceof Player) {
-                            if (Arrays.asList(((Player) target).getActions()).contains("Attack")) {
-                                mousePackets.queueClickPacket();
-                                playerPackets.queuePlayerAction((Player) target, "Attack");
-                            } else {
                                 mousePackets.queueClickPacket();
                                 playerPackets.queuePlayerAction(2, ((Player) target).getId(), false);
-                            }
                         }
                         break;
                     case "equip":
@@ -438,6 +435,10 @@ public class pvpkeys extends Plugin {
 
     @Subscribe
     public void onMenuOptionClicked(MenuOptionClicked event) {
+        if(event.getMenuOption().contains("Set Target")){
+            tag(event.getMenuEntry());
+            event.consume();
+        }
         if (lastTarget) {
             int id = event.getMenuAction().getId();
             Range<Integer> npcAction = Range.closed(MenuAction.NPC_FIRST_OPTION.getId(), MenuAction.NPC_FIFTH_OPTION.getId());
@@ -458,19 +459,17 @@ public class pvpkeys extends Plugin {
     public void onMenuEntryAdded(MenuEntryAdded event) {
         if (event.getType() == MenuAction.PLAYER_THIRD_OPTION.getId()) {
             //			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "doing stuff", null);
-            client.createMenuEntry(-1)
+            client.createMenuEntry(client.getMenuOptionCount()-2)
                     .setOption("(Player)Set Target")
                     .setTarget(event.getTarget())
                     .setIdentifier(event.getIdentifier())
-                    .setType(MenuAction.RUNELITE)
-                    .onClick(this::tag);
+                    .setType(MenuAction.UNKNOWN);
         } else if (event.getType() == MenuAction.EXAMINE_NPC.getId()) {
-            client.createMenuEntry(-1)
+            client.createMenuEntry(client.getMenuOptionCount()-2)
                     .setOption("(NPC)Set Target")
                     .setTarget(event.getTarget())
                     .setIdentifier(event.getIdentifier())
-                    .setType(MenuAction.RUNELITE)
-                    .onClick(this::tag);
+                    .setType(MenuAction.UNKNOWN);
         }
     }
 
@@ -530,6 +529,7 @@ public class pvpkeys extends Plugin {
         clientToolbar.removeNavigation(navButton);
         setupList.clear();
         executor.shutdown();
+        overlayManager.remove(overlay);
         updateHotkeys();
     }
 
@@ -601,6 +601,8 @@ public class pvpkeys extends Plugin {
     public void writeConfig() throws IOException {
         String output = "";
         output += lastTarget ? "true" : "false";
+        output += "\n";
+        output +=  highlightTarget ? "true" : "false";
         Files.write(path.resolve("pvpkeys.config"),
                 output.getBytes(StandardCharsets.UTF_8));
     }
@@ -619,6 +621,11 @@ public class pvpkeys extends Plugin {
                         lastTarget = true;
                     } else {
                         lastTarget = false;
+                    }
+                    if (lines.size() > 1 && lines.get(1).equals("true")) {
+                        highlightTarget = true;
+                    } else {
+                        highlightTarget = false;
                     }
                 }
             }
