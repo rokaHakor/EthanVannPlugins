@@ -1,5 +1,7 @@
 package com.example.PrayerFlicker;
 
+import com.example.PacketUtils.Packets.MousePackets;
+import com.example.PacketUtils.Packets.WidgetPackets;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
 import lombok.SneakyThrows;
@@ -45,96 +47,18 @@ public class PrayerFlickerPlugin extends Plugin {
     Client client;
     @Inject
     private ClientThread clientThread;
-    private int rev = 205;
+    private int rev = 206;
     private boolean loaded = false;
     @Inject
     private KeyManager keyManager;
     @Inject
     private PrayerFlickerConfig config;
-    public Class classWithgetPacketBufferNode = null;
-    public Method getPacketBufferNode = null;
-    public Class ClientPacket = null;
-    public Field Widget1Packet = null;
-    public Field ClickPacket = null;
-    public Class isaacClass = null;
-    public Class PacketBufferNode = null;
-    public Field packetWriter = null;
-    public Object isaac = null;
+    @Inject
+    WidgetPackets widgetPackets;
+    @Inject
+    MousePackets mousePackets;
     private final int quickPrayerWidgetID = WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId();
 
-    @SneakyThrows
-    private boolean loadShit() {
-        try {
-            classWithgetPacketBufferNode = client.getClass().getClassLoader().loadClass("hf");
-            ClientPacket = client.getClass().getClassLoader().loadClass("jj");
-            ClickPacket = ClientPacket.getDeclaredField("cp");
-            ClickPacket.setAccessible(true);
-            Widget1Packet = ClientPacket.getDeclaredField("bl");
-            Widget1Packet.setAccessible(true);
-            packetWriter = client.getClass().getDeclaredField("gm");
-            PacketBufferNode = client.getClass().getClassLoader().loadClass("jm");
-            packetWriter.setAccessible(true);
-            Field isaac2 = packetWriter.get(null).getClass().getDeclaredField("a");
-            isaac2.setAccessible(true);
-            isaac = isaac2.get(packetWriter.get(null));
-            isaacClass = client.getClass().getClassLoader().loadClass("qh");
-            getPacketBufferNode = Arrays.stream(classWithgetPacketBufferNode.getDeclaredMethods()).filter(m -> m.getReturnType().equals(PacketBufferNode)).collect(Collectors.toList()).get(0);
-            getPacketBufferNode.setAccessible(true);
-        } catch (Exception e) {
-            client.getLogger().warn("Failed to load prayer flicker plugin");
-            return false;
-        }
-        client.getLogger().warn("prayer flicker plugin loaded");
-        return true;
-    }
-
-    @SneakyThrows
-    private void queueClickPacket() {
-        Object packetBufferNode = getPacketBufferNode.invoke(null, ClickPacket.get(ClientPacket), isaac, (byte) -72);
-        Buffer buffer = (net.runelite.api.Buffer) packetBufferNode.getClass().getDeclaredField("l").get(packetBufferNode);
-        client.setMouseLastPressedMillis(System.currentTimeMillis());
-        int mousePressedTime = ((int) (client.getMouseLastPressedMillis() - client.getClientMouseLastPressedMillis()));
-        if (mousePressedTime < 0) {
-            mousePressedTime = 0;
-        }
-        if (mousePressedTime > 32767) {
-            mousePressedTime = 32767;
-        }
-        client.setClientMouseLastPressedMillis(client.getMouseLastPressedMillis());
-        int mouseInfo = (mousePressedTime << 1) + 1;
-
-        buffer.writeShort(mouseInfo);
-        buffer.writeShort(0);
-        buffer.writeShort(0);
-        Method addNode = packetWriter.get(null).getClass().getMethod("l", PacketBufferNode, byte.class);
-        addNode.setAccessible(true);
-        addNode.invoke(packetWriter.get(null), packetBufferNode, (byte) 0);
-    }
-
-    @Subscribe
-    public void onGameStateChanged(GameStateChanged event) {
-        if (event.getGameState() == GameState.LOGGED_IN && !loaded) {
-            loaded = loadShit();
-        }
-        if (event.getGameState() == GameState.LOGIN_SCREEN) {
-            loaded = false;
-        }
-        if (event.getGameState() == GameState.HOPPING) {
-            loaded = false;
-        }
-    }
-
-    @SneakyThrows
-    private void queueWidgetPacket(int one, int two, int three) {
-        Object packetBufferNode = getPacketBufferNode.invoke(null, Widget1Packet.get(ClientPacket), isaac, (byte) -72);
-        Buffer buffer = (net.runelite.api.Buffer) packetBufferNode.getClass().getDeclaredField("l").get(packetBufferNode);
-        buffer.writeInt(one);
-        buffer.writeShort(three);
-        buffer.writeShort(two);
-        Method addNode = packetWriter.get(null).getClass().getMethod("l", PacketBufferNode, byte.class);
-        addNode.setAccessible(true);
-        addNode.invoke(packetWriter.get(null), packetBufferNode, (byte) 0);
-    }
 
     @Provides
     public PrayerFlickerConfig getConfig(ConfigManager configManager) {
@@ -142,11 +66,8 @@ public class PrayerFlickerPlugin extends Plugin {
     }
 
     private void togglePrayer() {
-        if (!loaded) {
-            loaded = loadShit();
-        }
-        queueClickPacket();
-        queueWidgetPacket(quickPrayerWidgetID, -1, -1);
+        mousePackets.queueClickPacket();
+        widgetPackets.queueWidgetActionPacket(1,quickPrayerWidgetID, -1, -1);
     }
 
     @Override
@@ -186,8 +107,8 @@ public class PrayerFlickerPlugin extends Plugin {
     boolean toggle;
 
     public void switchAndUpdatePrayers(int i) {
-        queueClickPacket();
-        queueWidgetPacket(WidgetInfo.QUICK_PRAYER_PRAYERS.getId(), -1, i);
+        mousePackets.queueClickPacket();
+        widgetPackets.queueWidgetActionPacket(1,WidgetInfo.QUICK_PRAYER_PRAYERS.getId(), -1, i);
         togglePrayer();
         togglePrayer();
     }

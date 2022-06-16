@@ -25,7 +25,7 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.10"
+version = "0.0.11"
 
 project.extra["PluginName"] =
     "PrayerFlickerPlugin" // This is the name that is used in the external plugin manager panel
@@ -38,7 +38,7 @@ dependencies {
 
     compileOnly("com.openosrs:runelite-api:$openosrsVersion+")
     compileOnly("com.openosrs:runelite-client:$openosrsVersion+")
-
+    compileOnly(project(":PacketUtils"))
     compileOnly(Libraries.guice)
     compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)
@@ -53,6 +53,8 @@ tasks {
                     "Plugin-Version" to project.version,
                     "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
                     "Plugin-Provider" to project.extra["PluginProvider"],
+                    "Plugin-Dependencies" to
+                            arrayOf(nameToId("PacketUtils")).joinToString(),
                     "Plugin-Description" to project.extra["PluginDescription"],
                     "Plugin-License" to project.extra["PluginLicense"]
                 )

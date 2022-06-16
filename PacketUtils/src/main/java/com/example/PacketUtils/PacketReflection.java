@@ -33,7 +33,7 @@ public class PacketReflection {
             EVENT_MOUSE_CLICK = ClientPacket.getDeclaredField(ObfuscatedNames.EVENT_MOUSE_CLICK);
             EVENT_MOUSE_CLICK.setAccessible(true);
 
-            PACKETWRITER = client.getClass().getDeclaredField(ObfuscatedNames.PACKETWRITER);
+            PACKETWRITER = client.getClass().getDeclaredField(ObfuscatedNames.PACKETWRITERCLIENTFIELD);
             PacketBufferNode = client.getClass().getClassLoader().loadClass(ObfuscatedNames.PACKETBUFFERNODECLASS);
             PACKETWRITER.setAccessible(true);
             Field isaac2 = PACKETWRITER.get(null).getClass().getDeclaredField(ObfuscatedNames.ISAACFIELD);
@@ -88,7 +88,7 @@ public class PacketReflection {
     @SneakyThrows
     public void sendPacket(PacketDef def, Object... objects) {
         Object packetBufferNode = getPacketBufferNode.invoke(null, fetchPacketField(def.name).get(ClientPacket),
-                isaac, ObfuscatedNames.PACKETBUFFERNODEGARBAGE.byteValue());
+                isaac, ObfuscatedNames.PACKETBUFFERNODEGARBAGE);
         Buffer buffer = (net.runelite.api.Buffer) packetBufferNode.getClass().getDeclaredField(ObfuscatedNames.BUFFERFROMPACKETBUFFERNODE).get(packetBufferNode);
         List<String> params = null;
         if (def.type == PacketType.IF_BUTTON) {
