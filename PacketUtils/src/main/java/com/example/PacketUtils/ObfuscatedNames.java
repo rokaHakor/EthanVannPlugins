@@ -70,4 +70,5 @@ public final class ObfuscatedNames {
 	public static final String IF_BUTTON2= "cr";
 	public static final String EVENT_MOUSE_CLICK= "f";
 	public static final String IF_BUTTON10= "aw";
+	public static final String RESUME_PAUSEBUTTON = "bw";
 }

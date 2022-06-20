@@ -112,6 +112,30 @@ public class pvpkeys extends Plugin
 	private KeyManager keyManager;
 	ArrayList<Setup> setupList = new ArrayList<Setup>();
 	ConcurrentHashMap<String, ListenerKeyPair> hotkeyListenerList = new ConcurrentHashMap<>();
+	HashMap<Integer, Integer> toStandardMap = new HashMap<>()
+	{{
+		put(1, 1);
+		put(2, 1);
+		put(3, 1);
+	}};
+	HashMap<Integer, Integer> toArceusMap = new HashMap<>()
+	{{
+		put(0, 3);
+		put(1, 3);
+		put(2, 3);
+	}};
+	HashMap<Integer, Integer> toLunarMap = new HashMap<>()
+	{{
+		put(0, 2);
+		put(1, 2);
+		put(3, 3);
+	}};
+	HashMap<Integer, Integer> toAncientMap = new HashMap<>()
+	{{
+		put(0, 1);
+		put(2, 2);
+		put(3, 2);
+	}};
 	@Inject
 	Client client;
 	private HeadIcon hitTriggerType;
@@ -592,6 +616,39 @@ public class pvpkeys extends Plugin
 						mousePackets.queueClickPacket();
 						movementPackets.queueMovement(client.getLocalPlayer().getWorldLocation().dx(deltax).dy(deltay));
 						break;
+					case "spellbook":
+						int spellbook = client.getVarbitValue(4070);
+						Widget magecape = getItem("Magic cape*");
+						if(magecape==null){
+							magecape = getEquipment("Magic cape*");
+						}
+						if(magecape==null){
+							continue;
+						}
+						int childId = -1;
+						switch (args[0])
+						{
+							case "standard":
+								childId = toStandardMap.get(spellbook);
+								break;
+							case "lunars":
+								childId = toLunarMap.get(spellbook);
+								break;
+							case "ancient":
+								childId = toAncientMap.get(spellbook);
+								break;
+							case "arceuus":
+								childId = toArceusMap.get(spellbook);
+								break;
+						}
+						if(childId == -1)
+						{
+							continue;
+						}
+						mousePackets.queueClickPacket();
+						widgetPackets.queueWidgetAction(magecape,"Spellbook");
+						mousePackets.queueClickPacket();
+						widgetPackets.queueResumePause(14352385, childId);
 					case "waitforhit":
 						if (!args[0].equals("dummy"))
 						{

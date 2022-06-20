@@ -49,6 +49,7 @@ public class PacketDef
 	public static final PacketDef IF_BUTTON2;
 	public static final PacketDef EVENT_MOUSE_CLICK;
 	public static final PacketDef IF_BUTTON10;
+	public static final PacketDef RESUME_PAUSEBUTTON;
 
 	PacketDef(String var1, LinkedHashMap fields, PacketType type) {
 		this.name = var1;
@@ -57,6 +58,10 @@ public class PacketDef
 	}
 	static
 	{
+		RESUME_PAUSEBUTTON = new PacketDef(ObfuscatedNames.RESUME_PAUSEBUTTON, new LinkedHashMap<String,String>(){{
+			put("childId", "dd");
+			put("widgetId", "do");
+		}}, PacketType.RESUME_PAUSEBUTTON);
 		OPOBJ1 = new PacketDef(ObfuscatedNames.OPOBJ1, new LinkedHashMap<String,String>(){
 			{
 				put("worldPointX","dr");

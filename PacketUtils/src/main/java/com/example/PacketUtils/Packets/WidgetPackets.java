@@ -79,10 +79,12 @@ public class WidgetPackets {
     public void queueWidgetOnWidget(Widget srcWidget, Widget destWidget) {
         queueWidgetOnWidget(srcWidget.getId(), srcWidget.getIndex(), srcWidget.getItemId(), destWidget.getId(), destWidget.getIndex(), destWidget.getItemId());
     }
-
     public void queueWidgetOnWidget(int sourceWidgetId, int sourceSlot, int sourceItemId, int destinationWidgetId, int destinationSlot, int destinationItemId) {
         packetReflection.sendPacket(PacketDef.IF_BUTTONT, sourceWidgetId, sourceSlot, sourceItemId, destinationWidgetId,
                 destinationSlot, destinationItemId);
+    }
+    public void queueResumePause(int widgetId,int childId){
+        packetReflection.sendPacket(PacketDef.RESUME_PAUSEBUTTON,widgetId,childId);
     }
 
 }

@@ -91,6 +91,9 @@ public class PacketReflection {
                 isaac, ObfuscatedNames.PACKETBUFFERNODEGARBAGE);
         Buffer buffer = (net.runelite.api.Buffer) packetBufferNode.getClass().getDeclaredField(ObfuscatedNames.BUFFERFROMPACKETBUFFERNODE).get(packetBufferNode);
         List<String> params = null;
+        if(def.type == PacketType.RESUME_PAUSEBUTTON){
+            params = List.of("widgetId", "childId");
+        }
         if (def.type == PacketType.IF_BUTTON) {
             params = List.of("widgetId", "childId", "itemId");
         }
