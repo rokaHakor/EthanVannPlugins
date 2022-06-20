@@ -11,6 +11,7 @@ import com.google.inject.Inject;
 import net.runelite.api.Actor;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.HeadIcon;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.MenuAction;
@@ -69,11 +70,7 @@ import static net.runelite.api.ScriptID.XPDROPS_SETDROPSIZE;
 import static net.runelite.client.RuneLite.RUNELITE_DIR;
 import static net.runelite.client.externalplugins.ExternalPluginManager.pluginManager;
 
-@PluginDescriptor(
-		name = "PvP Keys",
-		description = "",
-		enabledByDefault = false
-)
+@PluginDescriptor(name = "PvP Keys", description = "", enabledByDefault = false)
 @PluginDependency(PacketUtilsPlugin.class)
 @Extension
 public class pvpkeys extends Plugin
@@ -117,6 +114,7 @@ public class pvpkeys extends Plugin
 	ConcurrentHashMap<String, ListenerKeyPair> hotkeyListenerList = new ConcurrentHashMap<>();
 	@Inject
 	Client client;
+	private HeadIcon hitTriggerType;
 
 	public pvpkeys() throws IOException
 	{
@@ -132,12 +130,7 @@ public class pvpkeys extends Plugin
 		executor = Executors.newScheduledThreadPool(1);
 		final BufferedImage icon = ImageIO.read(getFileFromResourceAsStream("73.png"));
 		panel = new PvPKeysPanel(client, this);
-		navButton = NavigationButton.builder()
-				.tooltip("Pvp Keys")
-				.icon(icon)
-				.panel(panel)
-				.priority(4)
-				.build();
+		navButton = NavigationButton.builder().tooltip("Pvp Keys").icon(icon).panel(panel).priority(4).build();
 		clientToolbar.addNavigation(navButton);
 		if (client.getRevision() != PacketUtilsPlugin.CLIENT_REV)
 		{
@@ -309,8 +302,7 @@ public class pvpkeys extends Plugin
 							if (!client.isPrayerActive(prayer))
 							{
 								mousePackets.queueClickPacket();
-								widgetPackets.queueWidgetAction(client.getWidget(prayer.getWidgetInfo()), "Activate",
-										"Deactivate");
+								widgetPackets.queueWidgetAction(client.getWidget(prayer.getWidgetInfo()), "Activate", "Deactivate");
 							}
 						}
 						else if (args[0].equals("off"))
@@ -337,8 +329,7 @@ public class pvpkeys extends Plugin
 						{
 							mousePackets.queueClickPacket();
 							widgetPackets.queueWidgetActionPacket(2, 10485775, -1, -1);
-							MenuEntry x =
-									client.createMenuEntry(-1).setParam1(WidgetInfo.QUICK_PRAYER_PRAYERS.getId()).setType(MenuAction.RUNELITE).setOption("Quick Prayer Update");
+							MenuEntry x = client.createMenuEntry(-1).setParam1(WidgetInfo.QUICK_PRAYER_PRAYERS.getId()).setType(MenuAction.RUNELITE).setOption("Quick Prayer Update");
 							eventBus.post(new MenuOptionClicked(x));
 						}
 						if (args[0].equals("on"))
@@ -401,10 +392,7 @@ public class pvpkeys extends Plugin
 							if (widget != null)
 							{
 								mousePackets.queueClickPacket();
-								widgetPackets.queueWidgetAction(widget,
-										"Equip",
-										"Wear",
-										"Wield");
+								widgetPackets.queueWidgetAction(widget, "Equip", "Wear", "Wield");
 							}
 						}
 						break;
@@ -428,8 +416,7 @@ public class pvpkeys extends Plugin
 						}
 						if (commands.length > i + 1)
 						{
-							queuedCommands.put(client.getTickCount() + delay, Arrays.copyOfRange(commands, i + 1,
-									commands.length));
+							queuedCommands.put(client.getTickCount() + delay, Arrays.copyOfRange(commands, i + 1, commands.length));
 						}
 						return;
 					case "item":
@@ -453,8 +440,7 @@ public class pvpkeys extends Plugin
 						}
 						break;
 					case "selectspell":
-						Widget spell =
-								client.getWidget(WidgetInfo.valueOf("SPELL_" + args[0].replaceAll(" ", "_").toUpperCase()));
+						Widget spell = client.getWidget(WidgetInfo.valueOf("SPELL_" + args[0].replaceAll(" ", "_").toUpperCase()));
 						if (spell != null)
 						{
 							mousePackets.queueClickPacket();
@@ -466,7 +452,7 @@ public class pvpkeys extends Plugin
 						}
 						break;
 					case "equipment":
-						if(args.length < 2)
+						if (args.length < 2)
 						{
 							//							client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "not enough args for equipment command",
 							//null);
@@ -490,7 +476,7 @@ public class pvpkeys extends Plugin
 							if (widget != null)
 							{
 								mousePackets.queueClickPacket();
-								widgetPackets.queueWidgetAction(widget,"Remove");
+								widgetPackets.queueWidgetAction(widget, "Remove");
 							}
 						}
 						break;
@@ -500,8 +486,7 @@ public class pvpkeys extends Plugin
 							if (target.getWorldLocation() != null)
 							{
 								mousePackets.queueClickPacket();
-								movementPackets.queueMovement(target.getWorldLocation().getX(),
-										target.getWorldLocation().getY(), false);
+								movementPackets.queueMovement(target.getWorldLocation().getX(), target.getWorldLocation().getY(), false);
 							}
 						}
 						break;
@@ -519,58 +504,60 @@ public class pvpkeys extends Plugin
 							break;
 						}
 					case "spellattack":
-                        args[0] = args[0].trim().replaceAll("\\s", "_").toUpperCase();
+						args[0] = args[0].trim().replaceAll("\\s", "_").toUpperCase();
 						if (args[0].equals("ICE") || (args[0].equals("BLOOD")))
 						{
-                            if(args[0].equals("ICE"))
-                            {
-                                if (client.getBoostedSkillLevel(Skill.MAGIC) >= 94)
-                                {
-                                    widgetSpell = WidgetInfo.SPELL_ICE_BARRAGE;
-                                }
-                                else if (client.getBoostedSkillLevel(Skill.MAGIC) >= 82)
-                                {
-                                    widgetSpell = WidgetInfo.SPELL_ICE_BLITZ;
-                                }
-                                else if (client.getBoostedSkillLevel(Skill.MAGIC) >= 70)
-                                {
-                                    widgetSpell = WidgetInfo.SPELL_ICE_BURST;
-                                }
-                                else if (client.getBoostedSkillLevel(Skill.MAGIC) >= 58)
-                                {
-                                    widgetSpell = WidgetInfo.SPELL_ICE_RUSH;
-                                }
-                                else
-                                {
-                                    widgetSpell = null;
-                                }
-                            }else{
-                                if (client.getBoostedSkillLevel(Skill.MAGIC) >= 92)
-                                {
-                                    widgetSpell = WidgetInfo.SPELL_BLOOD_BARRAGE;
-                                }
-                                else if (client.getBoostedSkillLevel(Skill.MAGIC) >= 80)
-                                {
-                                    widgetSpell = WidgetInfo.SPELL_BLOOD_BLITZ;
-                                }
-                                else if (client.getBoostedSkillLevel(Skill.MAGIC) >= 68)
-                                {
-                                    widgetSpell = WidgetInfo.SPELL_BLOOD_BURST;
-                                }
-                                else if (client.getBoostedSkillLevel(Skill.MAGIC) >= 56)
-                                {
-                                    widgetSpell = WidgetInfo.SPELL_BLOOD_RUSH;
-                                }
-                                else
-                                {
-                                    widgetSpell = null;
-                                }
-                            }
+							if (args[0].equals("ICE"))
+							{
+								if (client.getBoostedSkillLevel(Skill.MAGIC) >= 94)
+								{
+									widgetSpell = WidgetInfo.SPELL_ICE_BARRAGE;
+								}
+								else if (client.getBoostedSkillLevel(Skill.MAGIC) >= 82)
+								{
+									widgetSpell = WidgetInfo.SPELL_ICE_BLITZ;
+								}
+								else if (client.getBoostedSkillLevel(Skill.MAGIC) >= 70)
+								{
+									widgetSpell = WidgetInfo.SPELL_ICE_BURST;
+								}
+								else if (client.getBoostedSkillLevel(Skill.MAGIC) >= 58)
+								{
+									widgetSpell = WidgetInfo.SPELL_ICE_RUSH;
+								}
+								else
+								{
+									widgetSpell = null;
+								}
+							}
+							else
+							{
+								if (client.getBoostedSkillLevel(Skill.MAGIC) >= 92)
+								{
+									widgetSpell = WidgetInfo.SPELL_BLOOD_BARRAGE;
+								}
+								else if (client.getBoostedSkillLevel(Skill.MAGIC) >= 80)
+								{
+									widgetSpell = WidgetInfo.SPELL_BLOOD_BLITZ;
+								}
+								else if (client.getBoostedSkillLevel(Skill.MAGIC) >= 68)
+								{
+									widgetSpell = WidgetInfo.SPELL_BLOOD_BURST;
+								}
+								else if (client.getBoostedSkillLevel(Skill.MAGIC) >= 56)
+								{
+									widgetSpell = WidgetInfo.SPELL_BLOOD_RUSH;
+								}
+								else
+								{
+									widgetSpell = null;
+								}
+							}
 						}
 						else
 						{
 							args[0] = "SPELL_" + args[0];
-                            widgetSpell = WidgetInfo.valueOf(args[0]);
+							widgetSpell = WidgetInfo.valueOf(args[0]);
 						}
 						if (widgetSpell != null)
 						{
@@ -610,6 +597,21 @@ public class pvpkeys extends Plugin
 						{
 							hitTrigger = Integer.parseInt(args[0]);
 						}
+						if (args.length > 1)
+						{
+							switch (args[1])
+							{
+								case "mage":
+									hitTriggerType = HeadIcon.MAGIC;
+									break;
+								case "ranged":
+									hitTriggerType = HeadIcon.RANGED;
+									break;
+								case "melee":
+									hitTriggerType = HeadIcon.MELEE;
+									break;
+							}
+						}
 						else
 						{
 							hitTrigger = 1;
@@ -631,8 +633,7 @@ public class pvpkeys extends Plugin
 			Range<Integer> playerAction = Range.closed(MenuAction.PLAYER_FIRST_OPTION.getId(), MenuAction.PLAYER_EIGTH_OPTION.getId());
 			if (npcAction.contains(event.getMenuAction().getId()))
 			{
-				target =
-						client.getNpcs().stream().filter(p -> p.getIndex() == event.getMenuEntry().getIdentifier()).findFirst().orElse(null);
+				target = client.getNpcs().stream().filter(p -> p.getIndex() == event.getMenuEntry().getIdentifier()).findFirst().orElse(null);
 				//client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "set target to " + target.getName(), null);
 			}
 			if (playerAction.contains(event.getMenuAction().getId()))
@@ -649,21 +650,11 @@ public class pvpkeys extends Plugin
 		if (event.getType() == MenuAction.PLAYER_THIRD_OPTION.getId())
 		{
 			//			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "doing stuff", null);
-			client.createMenuEntry(client.getMenuOptionCount() - 2)
-					.setOption("(Player)Set Target")
-					.setTarget(event.getTarget())
-					.setIdentifier(event.getIdentifier())
-					.setType(MenuAction.RUNELITE)
-					.onClick(this::tag);
+			client.createMenuEntry(client.getMenuOptionCount() - 2).setOption("(Player)Set Target").setTarget(event.getTarget()).setIdentifier(event.getIdentifier()).setType(MenuAction.RUNELITE).onClick(this::tag);
 		}
 		else if (event.getType() == MenuAction.EXAMINE_NPC.getId())
 		{
-			client.createMenuEntry(client.getMenuOptionCount() - 2)
-					.setOption("(NPC)Set Target")
-					.setTarget(event.getTarget())
-					.setIdentifier(event.getIdentifier())
-					.setType(MenuAction.RUNELITE)
-					.onClick(this::tag);
+			client.createMenuEntry(client.getMenuOptionCount() - 2).setOption("(NPC)Set Target").setTarget(event.getTarget()).setIdentifier(event.getIdentifier()).setType(MenuAction.RUNELITE).onClick(this::tag);
 		}
 	}
 
@@ -704,12 +695,8 @@ public class pvpkeys extends Plugin
 			final int widgetId = intStack[intStackSize - 4];
 			final Widget[] children = client.getWidget(widgetId).getChildren();
 			final Widget text = children[0];
-			final int[] spriteIDs =
-					Arrays.stream(children)
-							.skip(1) // skip text
-							.filter(Objects::nonNull)
-							.mapToInt(Widget::getSpriteId)
-							.toArray();
+			final int[] spriteIDs = Arrays.stream(children).skip(1) // skip text
+					.filter(Objects::nonNull).mapToInt(Widget::getSpriteId).toArray();
 			for (int spriteID : spriteIDs)
 			{
 				if (spriteID == SpriteID.SKILL_HITPOINTS)
@@ -719,9 +706,36 @@ public class pvpkeys extends Plugin
 					int hit = (int) Math.round(xp / 1.33);
 					if (hit >= hitTrigger && xpDropCommands != null)
 					{
+						if (hitTriggerType != null)
+						{
+							if (target != null)
+							{
+								if (target instanceof Player)
+								{
+									Player pTarget = (Player) target;
+									if (pTarget.getOverheadIcon().equals(hitTriggerType))
+									{
+										return;
+									}
+								}
+								else if (target instanceof NPC)
+								{
+									NPC nTarget = (NPC) target;
+									if (nTarget.getComposition().getOverheadIcon().equals(hitTriggerType))
+									{
+										return;
+									}
+								}
+							}
+							else
+							{
+								return;
+							}
+						}
 						queuedCommands.put(client.getTickCount(), xpDropCommands);
 						xpDropCommands = null;
 						hitTrigger = 0;
+						hitTriggerType = null;
 					}
 				}
 			}
@@ -774,8 +788,7 @@ public class pvpkeys extends Plugin
 		}
 		else
 		{
-			target =
-					client.getNpcs().stream().filter(p -> p.getIndex() == entry.getIdentifier()).findFirst().orElse(null);
+			target = client.getNpcs().stream().filter(p -> p.getIndex() == entry.getIdentifier()).findFirst().orElse(null);
 			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "set target to " + target.getName(), null);
 		}
 	}
@@ -798,8 +811,7 @@ public class pvpkeys extends Plugin
 		{
 			output += "command:" + command + "\n";
 		}
-		Files.write(path.resolve(setup.name + ".txt"),
-				output.getBytes(StandardCharsets.UTF_8));
+		Files.write(path.resolve(setup.name + ".txt"), output.getBytes(StandardCharsets.UTF_8));
 	}
 
 	public Widget getEquipment(int id)
@@ -807,8 +819,10 @@ public class pvpkeys extends Plugin
 		Widget[] equipmentWidget = client.getWidget(WidgetInfo.EQUIPMENT).getStaticChildren();
 		for (int i = 0; i < equipmentWidget.length; i++)
 		{
-			if(equipmentWidget[i].getDynamicChildren()!=null&&equipmentWidget[i].getDynamicChildren().length>1){
-				if(equipmentWidget[i].getDynamicChildren()[1].getItemId()==id){
+			if (equipmentWidget[i].getDynamicChildren() != null && equipmentWidget[i].getDynamicChildren().length > 1)
+			{
+				if (equipmentWidget[i].getDynamicChildren()[1].getItemId() == id)
+				{
 					return equipmentWidget[i];
 				}
 			}
@@ -854,8 +868,7 @@ public class pvpkeys extends Plugin
 		output += lastTarget ? "true" : "false";
 		output += "\n";
 		output += highlightTarget ? "true" : "false";
-		Files.write(path.resolve("pvpkeys.config"),
-				output.getBytes(StandardCharsets.UTF_8));
+		Files.write(path.resolve("pvpkeys.config"), output.getBytes(StandardCharsets.UTF_8));
 	}
 
 	public void readConfig() throws IOException
