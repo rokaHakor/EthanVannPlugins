@@ -649,6 +649,7 @@ public class pvpkeys extends Plugin
 						widgetPackets.queueWidgetAction(magecape,"Spellbook");
 						mousePackets.queueClickPacket();
 						widgetPackets.queueResumePause(14352385, childId);
+						break;
 					case "waitforhit":
 						if (!args[0].equals("dummy"))
 						{
