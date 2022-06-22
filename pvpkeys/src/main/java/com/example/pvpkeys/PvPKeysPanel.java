@@ -159,28 +159,42 @@ public class PvPKeysPanel extends PluginPanel {
         comboBox.addItem("new set");
         button.addActionListener(e ->
         {
-            if (comboBox != null && comboBox.getSelectedItem() != null) {
-                if (comboBox.getSelectedItem().equals("new set")) {
-                    return;
-                } else {
-                    try {
-                        Files.delete(path.resolve(comboBox.getSelectedItem().toString() + ".txt"));
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(null, "Error Removing Set");
-                        ex.printStackTrace();
+            int input = JOptionPane.showConfirmDialog(null,
+                    "Do you really want to delete this setup?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+            if(input==0)
+            {
+                if (comboBox != null && comboBox.getSelectedItem() != null)
+                {
+                    if (comboBox.getSelectedItem().equals("new set"))
+                    {
+                        return;
                     }
-                    for (int i = plugin.setupList.size() - 1; i >= 0; i--) {
-                        if (plugin.setupList.get(i).name.equals(comboBox.getSelectedItem().toString())) {
-                            plugin.setupList.remove(i);
+                    else
+                    {
+                        try
+                        {
+                            Files.delete(path.resolve(comboBox.getSelectedItem().toString() + ".txt"));
                         }
+                        catch (IOException ex)
+                        {
+                            JOptionPane.showMessageDialog(null, "Error Removing Set");
+                            ex.printStackTrace();
+                        }
+                        for (int i = plugin.setupList.size() - 1; i >= 0; i--)
+                        {
+                            if (plugin.setupList.get(i).name.equals(comboBox.getSelectedItem().toString()))
+                            {
+                                plugin.setupList.remove(i);
+                            }
+                        }
+                        comboBox.removeItemAt(comboBox.getSelectedIndex());
+                        plugin.updateHotkeys();
+                        //				button.updateUI();
+                        //				comboBox.updateUI();
+                        //				display.updateUI();
+                        //				hkbutton2.update(this.getGraphics());
+                        update(getGraphics());
                     }
-                    comboBox.removeItemAt(comboBox.getSelectedIndex());
-                    plugin.updateHotkeys();
-                    //				button.updateUI();
-                    //				comboBox.updateUI();
-                    //				display.updateUI();
-                    //				hkbutton2.update(this.getGraphics());
-                    update(getGraphics());
                 }
             }
         });
@@ -360,7 +374,6 @@ public class PvPKeysPanel extends PluginPanel {
             }
         });
         panel2.add(comboBox, BorderLayout.NORTH);
-        panel2.add(gearButton, BorderLayout.CENTER);
         panel2.add(docs, BorderLayout.SOUTH);
         panel2.add(lastTarget, BorderLayout.EAST);
         textArea.setMinimumSize(new Dimension(0, 300));
@@ -391,7 +404,8 @@ public class PvPKeysPanel extends PluginPanel {
         if (plugin.highlightTarget) {
             highlightTarget.setSelected(true);
         }
-        add(highlightTarget, BorderLayout.EAST);
+        panel2.add(highlightTarget, BorderLayout.CENTER);
+        add(gearButton, BorderLayout.CENTER);
         textArea.setBorder(BorderFactory.createLineBorder(Color.white));
         if (comboBox.getSelectedItem() != null) {
             Setup setup =

@@ -21,8 +21,10 @@ import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.Skill;
 import net.runelite.api.SpriteID;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.ScriptPreFired;
@@ -58,6 +60,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -65,6 +68,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.stream.Collectors;
 
 import static net.runelite.api.ScriptID.XPDROPS_SETDROPSIZE;
 import static net.runelite.client.RuneLite.RUNELITE_DIR;
@@ -489,6 +493,19 @@ public class pvpkeys extends Plugin
 							widgetPackets.queueWidgetAction(widget, args[1]);
 						}
 						break;
+					case "nearest":
+						if(args[0].equals("player")){
+							target =
+									client.getPlayers().stream().filter(y->y!=client.getLocalPlayer()).sorted(Comparator.comparingInt(x->client.getLocalPlayer().getWorldLocation().distanceTo(x.getWorldLocation()))).findFirst().orElse(null);
+						}else if(args[0].equals("npc")){
+							target = client.getNpcs().stream().sorted(Comparator.comparingInt(x->client.getLocalPlayer().getWorldLocation().distanceTo(x.getWorldLocation()))).findFirst().orElse(null);
+						}else{
+							List<Actor> actors = new ArrayList<>();
+							actors.addAll(client.getNpcs());
+							actors.addAll(client.getPlayers().stream().filter(y->y!=client.getLocalPlayer()).collect(Collectors.toList()));
+							target = actors.stream().sorted(Comparator.comparingInt(x->client.getLocalPlayer().getWorldLocation().distanceTo(x.getWorldLocation()))).findFirst().orElse(null);
+						}
+						break;
 					case "unequip":
 						for (String arg : args)
 						{
@@ -692,13 +709,18 @@ public class pvpkeys extends Plugin
 			if (npcAction.contains(event.getMenuAction().getId()))
 			{
 				target = client.getNpcs().stream().filter(p -> p.getIndex() == event.getMenuEntry().getIdentifier()).findFirst().orElse(null);
-				//client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "set target to " + target.getName(), null);
 			}
 			if (playerAction.contains(event.getMenuAction().getId()))
 			{
 				target = client.getPlayers().stream().filter(p -> p.getId() == event.getMenuEntry().getIdentifier()).findFirst().orElse(null);
-				//client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "set target to " + target.getName(), null);
 			}
+			if(event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_PLAYER){
+				target = client.getPlayers().stream().filter(p -> p.getId() == event.getMenuEntry().getIdentifier()).findFirst().orElse(null);
+			}
+			if(event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_NPC){
+				target = client.getNpcs().stream().filter(p -> p.getIndex() == event.getMenuEntry().getIdentifier()).findFirst().orElse(null);
+			}
+			//client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "set target to " + target.getName(), null);
 		}
 	}
 
