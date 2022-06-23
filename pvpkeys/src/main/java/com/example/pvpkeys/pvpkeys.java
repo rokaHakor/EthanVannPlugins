@@ -21,10 +21,8 @@ import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.Skill;
 import net.runelite.api.SpriteID;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.GameTick;
-import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.ScriptPreFired;
@@ -494,16 +492,21 @@ public class pvpkeys extends Plugin
 						}
 						break;
 					case "nearest":
-						if(args[0].equals("player")){
+						if (args[0].equals("player"))
+						{
 							target =
-									client.getPlayers().stream().filter(y->y!=client.getLocalPlayer()).sorted(Comparator.comparingInt(x->client.getLocalPlayer().getWorldLocation().distanceTo(x.getWorldLocation()))).findFirst().orElse(null);
-						}else if(args[0].equals("npc")){
-							target = client.getNpcs().stream().sorted(Comparator.comparingInt(x->client.getLocalPlayer().getWorldLocation().distanceTo(x.getWorldLocation()))).findFirst().orElse(null);
-						}else{
+									client.getPlayers().stream().filter(y -> y != client.getLocalPlayer()).sorted(Comparator.comparingInt(x -> client.getLocalPlayer().getWorldLocation().distanceTo(x.getWorldLocation()))).findFirst().orElse(null);
+						}
+						else if (args[0].equals("npc"))
+						{
+							target = client.getNpcs().stream().sorted(Comparator.comparingInt(x -> client.getLocalPlayer().getWorldLocation().distanceTo(x.getWorldLocation()))).findFirst().orElse(null);
+						}
+						else
+						{
 							List<Actor> actors = new ArrayList<>();
 							actors.addAll(client.getNpcs());
-							actors.addAll(client.getPlayers().stream().filter(y->y!=client.getLocalPlayer()).collect(Collectors.toList()));
-							target = actors.stream().sorted(Comparator.comparingInt(x->client.getLocalPlayer().getWorldLocation().distanceTo(x.getWorldLocation()))).findFirst().orElse(null);
+							actors.addAll(client.getPlayers().stream().filter(y -> y != client.getLocalPlayer()).collect(Collectors.toList()));
+							target = actors.stream().sorted(Comparator.comparingInt(x -> client.getLocalPlayer().getWorldLocation().distanceTo(x.getWorldLocation()))).findFirst().orElse(null);
 						}
 						break;
 					case "unequip":
@@ -636,10 +639,12 @@ public class pvpkeys extends Plugin
 					case "spellbook":
 						int spellbook = client.getVarbitValue(4070);
 						Widget magecape = getItem("Magic cape*");
-						if(magecape==null){
+						if (magecape == null)
+						{
 							magecape = getEquipment("Magic cape*");
 						}
-						if(magecape==null){
+						if (magecape == null)
+						{
 							continue;
 						}
 						int childId = -1;
@@ -658,20 +663,16 @@ public class pvpkeys extends Plugin
 								childId = toArceusMap.get(spellbook);
 								break;
 						}
-						if(childId == -1)
+						if (childId == -1)
 						{
 							continue;
 						}
 						mousePackets.queueClickPacket();
-						widgetPackets.queueWidgetAction(magecape,"Spellbook");
+						widgetPackets.queueWidgetAction(magecape, "Spellbook");
 						mousePackets.queueClickPacket();
 						widgetPackets.queueResumePause(14352385, childId);
 						break;
 					case "waitforhit":
-						if (!args[0].equals("dummy"))
-						{
-							hitTrigger = Integer.parseInt(args[0]);
-						}
 						if (args.length > 1)
 						{
 							switch (args[1])
@@ -686,6 +687,12 @@ public class pvpkeys extends Plugin
 									hitTriggerType = HeadIcon.MELEE;
 									break;
 							}
+						}else{
+							hitTriggerType = null;
+						}
+						if (!args[0].equals("dummy"))
+						{
+							hitTrigger = Integer.parseInt(args[0]);
 						}
 						else
 						{
@@ -714,13 +721,44 @@ public class pvpkeys extends Plugin
 			{
 				target = client.getPlayers().stream().filter(p -> p.getId() == event.getMenuEntry().getIdentifier()).findFirst().orElse(null);
 			}
-			if(event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_PLAYER){
+			if (event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_PLAYER)
+			{
 				target = client.getPlayers().stream().filter(p -> p.getId() == event.getMenuEntry().getIdentifier()).findFirst().orElse(null);
 			}
-			if(event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_NPC){
+			if (event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_NPC)
+			{
 				target = client.getNpcs().stream().filter(p -> p.getIndex() == event.getMenuEntry().getIdentifier()).findFirst().orElse(null);
 			}
 			//client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "set target to " + target.getName(), null);
+		}
+		if(event.getMenuAction().equals(MenuAction.CC_OP)||event.getMenuAction().equals(MenuAction.CC_OP_LOW_PRIORITY))
+		{
+			if(event.getItemId()!=-1){
+				for (Setup setup : setupList)
+				{
+					if(setup.enabled){
+						String items ="";
+						for (String itemTrigger : setup.itemTriggers)
+						{
+							for (String s : itemTrigger.split(","))
+							{
+								items += s+",";
+							}
+						}
+						items = items.substring(0, items.length()-1);
+						for (String s : items.split(","))
+						{
+							if(isInteger(s) ?
+									Integer.parseInt(s) == event.getItemId() : WildcardMatcher.matches(s.toLowerCase(),
+									Text.removeTags(itemManager.getItemComposition(event.getItemId()).getName()).toLowerCase())){
+								parseCommands(setup.commands);
+								event.consume();
+								return;
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -890,6 +928,10 @@ public class pvpkeys extends Plugin
 		for (String command : setup.commands)
 		{
 			output += "command:" + command + "\n";
+		}
+		for (String itemTrigger : setup.itemTriggers)
+		{
+			output += "itemtrigger:" + itemTrigger + "\n";
 		}
 		Files.write(path.resolve(setup.name + ".txt"), output.getBytes(StandardCharsets.UTF_8));
 	}

@@ -7,6 +7,7 @@ public class Setup {
     Keybind keybind;
     String[] commands;
     boolean enabled;
+    String[] itemTriggers;
 
     public Setup(String name, Keybind keybind, String[] commands, boolean enabled) {
         this.name = name;
