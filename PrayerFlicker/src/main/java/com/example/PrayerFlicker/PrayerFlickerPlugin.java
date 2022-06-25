@@ -10,9 +10,12 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Buffer;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.MenuAction;
+import net.runelite.api.MenuEntry;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
@@ -118,6 +121,21 @@ public class PrayerFlickerPlugin extends Plugin {
     public void updatePrayers() {
         togglePrayer();
         togglePrayer();
+    }
+
+    @Subscribe
+    public void onMenuEntryAdded(MenuEntryAdded e){
+        if(e.getMenuEntry().getWidget().getId()==WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId()){
+            if(e.getMenuEntry().getOption().equals("Setup")){
+                client.createMenuEntry(client.getMenuOptionCount() - 2).setOption("Toggle Prayer Flicker").setTarget(
+                        "").setIdentifier(-1).setType(MenuAction.RUNELITE).onClick(this::toggleFlicker);
+            }
+        }
+    }
+
+    private void toggleFlicker(MenuEntry menuEntry)
+    {
+        this.toggleFlicker();
     }
 
     @Subscribe

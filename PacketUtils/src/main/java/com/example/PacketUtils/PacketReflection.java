@@ -3,6 +3,7 @@ package com.example.PacketUtils;
 import lombok.SneakyThrows;
 import net.runelite.api.Buffer;
 import net.runelite.api.Client;
+import net.runelite.client.callback.ClientThread;
 
 import javax.inject.Inject;
 import java.lang.reflect.Field;
@@ -15,6 +16,8 @@ import java.util.stream.Collectors;
 public class PacketReflection {
     @Inject
     Client client;
+    @Inject
+    ClientThread thread;
     public static Class classWithgetPacketBufferNode = null;
     public static Method getPacketBufferNode = null;
     public static Class ClientPacket = null;
@@ -26,28 +29,34 @@ public class PacketReflection {
 
     @SneakyThrows
     public boolean LoadPackets() {
-        try {
-            classWithgetPacketBufferNode = client.getClass().getClassLoader().loadClass(ObfuscatedNames.CLASSWITHGETPACKETBUFFERNODE);
-            ClientPacket = client.getClass().getClassLoader().loadClass(ObfuscatedNames.CLIENTPACKETCLASS);
+        thread.execute(()->
+        {
+            try
+            {
+                classWithgetPacketBufferNode = client.getClass().getClassLoader().loadClass(ObfuscatedNames.CLASSWITHGETPACKETBUFFERNODE);
+                ClientPacket = client.getClass().getClassLoader().loadClass(ObfuscatedNames.CLIENTPACKETCLASS);
 
-            EVENT_MOUSE_CLICK = ClientPacket.getDeclaredField(ObfuscatedNames.EVENT_MOUSE_CLICK);
-            EVENT_MOUSE_CLICK.setAccessible(true);
+                EVENT_MOUSE_CLICK = ClientPacket.getDeclaredField(ObfuscatedNames.EVENT_MOUSE_CLICK);
+                EVENT_MOUSE_CLICK.setAccessible(true);
 
-            PACKETWRITER = client.getClass().getDeclaredField(ObfuscatedNames.PACKETWRITERCLIENTFIELD);
-            PacketBufferNode = client.getClass().getClassLoader().loadClass(ObfuscatedNames.PACKETBUFFERNODECLASS);
-            PACKETWRITER.setAccessible(true);
-            Field isaac2 = PACKETWRITER.get(null).getClass().getDeclaredField(ObfuscatedNames.ISAACFIELD);
-            isaac2.setAccessible(true);
-            isaac = isaac2.get(PACKETWRITER.get(null));
-            isaacClass = client.getClass().getClassLoader().loadClass(ObfuscatedNames.ISAACCLASS);
-            getPacketBufferNode = Arrays.stream(classWithgetPacketBufferNode.getDeclaredMethods()).filter(m -> m.getReturnType().equals(PacketBufferNode)).collect(Collectors.toList()).get(0);
-            getPacketBufferNode.setAccessible(true);
-        } catch (Exception e) {
-            client.getLogger().warn("Failed to load Packets Into Client");
-            return false;
-        }
-        client.getLogger().warn("Successfully loaded Packets Into Client");
-        return true;
+                PACKETWRITER = client.getClass().getDeclaredField(ObfuscatedNames.PACKETWRITERCLIENTFIELD);
+                PacketBufferNode = client.getClass().getClassLoader().loadClass(ObfuscatedNames.PACKETBUFFERNODECLASS);
+                PACKETWRITER.setAccessible(true);
+                Field isaac2 = PACKETWRITER.get(null).getClass().getDeclaredField(ObfuscatedNames.ISAACFIELD);
+                isaac2.setAccessible(true);
+                isaac = isaac2.get(PACKETWRITER.get(null));
+                isaacClass = client.getClass().getClassLoader().loadClass(ObfuscatedNames.ISAACCLASS);
+                getPacketBufferNode = Arrays.stream(classWithgetPacketBufferNode.getDeclaredMethods()).filter(m -> m.getReturnType().equals(PacketBufferNode)).collect(Collectors.toList()).get(0);
+                getPacketBufferNode.setAccessible(true);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                client.getLogger().warn("Failed to load Packets Into Client");
+            }
+            client.getLogger().warn("Successfully loaded Packets Into Client");
+        });
+        return false;
     }
 
     @SneakyThrows

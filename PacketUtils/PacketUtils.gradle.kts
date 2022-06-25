@@ -25,7 +25,7 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.11"
+version = "0.0.12"
 
 project.extra["PluginName"] = "Packet Utils" // This is the name that is used in the external plugin manager panel
 project.extra["PluginDescription"] =
@@ -37,7 +37,6 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.6")
     compileOnly("com.openosrs:runelite-api:$openosrsVersion+")
     compileOnly("com.openosrs:runelite-client:$openosrsVersion+")
-
     compileOnly(Libraries.guice)
     compileOnly(Libraries.javax)
     compileOnly(Libraries.lombok)

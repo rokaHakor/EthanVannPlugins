@@ -745,7 +745,10 @@ public class pvpkeys extends Plugin
 								items += s+",";
 							}
 						}
-						items = items.substring(0, items.length()-1);
+						if(items.length()>1)
+						{
+							items = items.substring(0, items.length() - 1);
+						}
 						for (String s : items.split(","))
 						{
 							if(isInteger(s) ?
