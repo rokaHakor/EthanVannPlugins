@@ -34,13 +34,6 @@ project.extra["PluginDescription"] =
 dependencies {
     annotationProcessor(Libraries.lombok)
     annotationProcessor(Libraries.pf4j)
-    implementation("com.google.code.gson:gson:2.8.6")
-    compileOnly("com.openosrs:runelite-api:$openosrsVersion+")
-    compileOnly("com.openosrs:runelite-client:$openosrsVersion+")
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.javax)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
 }
 
 tasks {

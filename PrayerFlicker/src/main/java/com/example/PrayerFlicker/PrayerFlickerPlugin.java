@@ -7,15 +7,10 @@ import com.google.inject.Inject;
 import com.google.inject.Provides;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Buffer;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
-import net.runelite.api.MenuAction;
-import net.runelite.api.MenuEntry;
 import net.runelite.api.Varbits;
-import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
-import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
@@ -31,11 +26,7 @@ import net.runelite.client.util.HotkeyListener;
 import org.pf4j.Extension;
 
 import javax.swing.*;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import static net.runelite.client.externalplugins.ExternalPluginManager.pluginManager;
 
@@ -43,7 +34,8 @@ import static net.runelite.client.externalplugins.ExternalPluginManager.pluginMa
 @PluginDescriptor(
         name = "PrayerFlickerPlugin",
         description = "prayer flicker for quick prayers",
-        enabledByDefault = false
+        enabledByDefault = false,
+        tags = {"ethan"}
 )
 @Extension
 @Slf4j
@@ -53,8 +45,6 @@ public class PrayerFlickerPlugin extends Plugin {
     Client client;
     @Inject
     private ClientThread clientThread;
-    private int rev = 206;
-    private boolean loaded = false;
     @Inject
     private KeyManager keyManager;
     @Inject
@@ -72,13 +62,13 @@ public class PrayerFlickerPlugin extends Plugin {
 
     private void togglePrayer() {
         mousePackets.queueClickPacket();
-        widgetPackets.queueWidgetActionPacket(1,quickPrayerWidgetID, -1, -1);
+        widgetPackets.queueWidgetActionPacket(1, quickPrayerWidgetID, -1, -1);
     }
 
     @Override
     @SneakyThrows
     public void startUp() {
-        if (client.getRevision() != rev) {
+        if (client.getRevision() != PacketUtilsPlugin.CLIENT_REV) {
             SwingUtilities.invokeLater(() -> {
                 JOptionPane.showMessageDialog(ClientUI.getFrame(), "prayer flicker not updated for this rev please wait for plugin update");
                 try {
@@ -95,7 +85,6 @@ public class PrayerFlickerPlugin extends Plugin {
     @Override
     public void shutDown() {
         log.info("Shutdown");
-        loaded = false;
         keyManager.unregisterKeyListener(prayerToggle);
         toggle = false;
         if (client.getGameState() != GameState.LOGGED_IN) {
@@ -113,7 +102,7 @@ public class PrayerFlickerPlugin extends Plugin {
 
     public void switchAndUpdatePrayers(int i) {
         mousePackets.queueClickPacket();
-        widgetPackets.queueWidgetActionPacket(1,WidgetInfo.QUICK_PRAYER_PRAYERS.getId(), -1, i);
+        widgetPackets.queueWidgetActionPacket(1, WidgetInfo.QUICK_PRAYER_PRAYERS.getId(), -1, i);
         togglePrayer();
         togglePrayer();
     }
@@ -121,21 +110,6 @@ public class PrayerFlickerPlugin extends Plugin {
     public void updatePrayers() {
         togglePrayer();
         togglePrayer();
-    }
-
-    @Subscribe
-    public void onMenuEntryAdded(MenuEntryAdded e){
-        if(e.getMenuEntry().getWidget().getId()==WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId()){
-            if(e.getMenuEntry().getOption().equals("Setup")){
-                client.createMenuEntry(client.getMenuOptionCount() - 2).setOption("Toggle Prayer Flicker").setTarget(
-                        "").setIdentifier(-1).setType(MenuAction.RUNELITE).onClick(this::toggleFlicker);
-            }
-        }
-    }
-
-    private void toggleFlicker(MenuEntry menuEntry)
-    {
-        this.toggleFlicker();
     }
 
     @Subscribe
@@ -150,6 +124,10 @@ public class PrayerFlickerPlugin extends Plugin {
                 event.consume();
                 switchAndUpdatePrayers(event.getParam0());
             }
+        }
+        if (config.minimapToggle() && event.getId() == 1 && event.getParam1() == WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getId()) {
+            toggleFlicker();
+            event.consume();
         }
     }
 

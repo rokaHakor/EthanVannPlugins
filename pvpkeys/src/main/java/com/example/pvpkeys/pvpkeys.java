@@ -72,7 +72,8 @@ import static net.runelite.api.ScriptID.XPDROPS_SETDROPSIZE;
 import static net.runelite.client.RuneLite.RUNELITE_DIR;
 import static net.runelite.client.externalplugins.ExternalPluginManager.pluginManager;
 
-@PluginDescriptor(name = "PvP Keys", description = "", enabledByDefault = false)
+@PluginDescriptor(name = "PvP Keys", description = "", enabledByDefault = false,
+		tags = {"ethan"})
 @PluginDependency(PacketUtilsPlugin.class)
 @Extension
 public class pvpkeys extends Plugin
